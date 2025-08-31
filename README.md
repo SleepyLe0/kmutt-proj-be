@@ -26,21 +26,24 @@ Before running this application, make sure you have the following installed:
 ## 🛠️ Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd kmutt-proj-be
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Environment Configuration**
-   
+
    Create environment files based on your environment:
-   
+
    **Development:**
+
    ```bash
    # .env.development.local
    NODE_ENV=development
@@ -58,6 +61,7 @@ Before running this application, make sure you have the following installed:
    ```
 
    **Production:**
+
    ```bash
    # .env.production.local
    NODE_ENV=production
@@ -77,11 +81,13 @@ Before running this application, make sure you have the following installed:
 ## 🚀 Running the Application
 
 ### Development Mode
+
 ```bash
 npm run dev
 ```
 
 ### Production Mode
+
 ```bash
 # Build the application
 npm run build
@@ -93,6 +99,7 @@ npm start
 ## 📚 API Documentation
 
 ### Base URL
+
 ```
 http://localhost:3000/api/v1
 ```
@@ -100,15 +107,18 @@ http://localhost:3000/api/v1
 ### User Endpoints
 
 #### Get All Users
+
 ```http
 GET /user
 ```
 
 **Query Parameters:**
+
 - `limit` (number, optional): Number of users per page (default: 20)
 - `page` (number, optional): Page number (default: 1)
 
 **Response:**
+
 ```json
 {
   "status": true,
@@ -135,11 +145,13 @@ GET /user
 ```
 
 #### Create User
+
 ```http
 POST /user
 ```
 
 **Request Body:**
+
 ```json
 {
   "firstname": "John",
@@ -149,6 +161,7 @@ POST /user
 ```
 
 **Response:**
+
 ```json
 {
   "status": true,
@@ -194,29 +207,29 @@ src/
 
 ### Environment Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `NODE_ENV` | Application environment | `development` |
-| `PORT` | Server port | `3000` |
-| `ROUTE_PREFIX` | API route prefix | `/api/v1` |
-| `LOG_DIR` | Log directory | `logs` |
-| `LOG_FORMAT` | Log format | `combined` |
-| `DB_HOST` | MongoDB host | `localhost` |
-| `DB_PORT` | MongoDB port | `27017` |
-| `DB_DATABASE` | Database name | - |
-| `DB_USER` | Database username | - |
-| `DB_PASSWORD` | Database password | - |
-| `CREDENTIALS` | CORS credentials | `true` |
-| `ORIGIN` | CORS origin | - |
+| Variable       | Description             | Default       |
+| -------------- | ----------------------- | ------------- |
+| `NODE_ENV`     | Application environment | `development` |
+| `PORT`         | Server port             | `3000`        |
+| `ROUTE_PREFIX` | API route prefix        | `/api/v1`     |
+| `LOG_DIR`      | Log directory           | `logs`        |
+| `LOG_FORMAT`   | Log format              | `combined`    |
+| `DB_HOST`      | MongoDB host            | `localhost`   |
+| `DB_PORT`      | MongoDB port            | `27017`       |
+| `DB_DATABASE`  | Database name           | -             |
+| `DB_USER`      | Database username       | -             |
+| `DB_PASSWORD`  | Database password       | -             |
+| `CREDENTIALS`  | CORS credentials        | `true`        |
+| `ORIGIN`       | CORS origin             | -             |
 
 ## 📝 Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start development server with hot reload |
-| `npm run build` | Build TypeScript to JavaScript |
-| `npm start` | Start production server |
-| `npm test` | Run tests (not implemented yet) |
+| Script          | Description                              |
+| --------------- | ---------------------------------------- |
+| `npm run dev`   | Start development server with hot reload |
+| `npm run build` | Build TypeScript to JavaScript           |
+| `npm start`     | Start production server                  |
+| `npm test`      | Run tests (not implemented yet)          |
 
 ## 🛡️ Security Features
 

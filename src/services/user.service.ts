@@ -3,7 +3,6 @@ import MainService from './main.service';
 import { User } from '@/interfaces/user.interface';
 import { buildData } from '@/utils/pagination';
 import { CreateUserDto } from '@/dtos/user.dto';
-import { HttpException } from '@/exceptions/HttpException';
 
 class UserService extends MainService {
   public async findAll({
@@ -25,6 +24,15 @@ class UserService extends MainService {
         currentLength: users.length,
         total,
       });
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  public async findById(id: string): Promise<User> {
+    try {
+      return await this.model.user.findById(id);
     } catch (error) {
       console.error(error);
       throw error;
@@ -53,6 +61,34 @@ class UserService extends MainService {
         });
         return createUser;
       }
+      throw new Error('User with this email already exists');
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  public async update(id: string, updateUserDto: any): Promise<User> {
+    try {
+      const updatedUser = await this.model.user.findByIdAndUpdate(
+        id,
+        {
+          ...updateUserDto,
+          updated_at: new Date(),
+        },
+        { new: true }
+      );
+      return updatedUser;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  public async delete(id: string): Promise<boolean> {
+    try {
+      const result = await this.model.user.findByIdAndDelete(id);
+      return !!result;
     } catch (error) {
       console.error(error);
       throw error;

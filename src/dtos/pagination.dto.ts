@@ -1,4 +1,11 @@
-import { IsString, IsBoolean, IsNumber, IsArray, IsNotEmpty, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsBoolean,
+  IsNumber,
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+} from 'class-validator';
 
 export class paginationDto {
   @IsNotEmpty()

@@ -7,18 +7,24 @@ type buildDataType = {
 };
 
 type info = {
-  pages : number;
-  limit : number;
-  currentCount : number;
-  totalCount : number;
-}
+  pages: number;
+  limit: number;
+  currentCount: number;
+  totalCount: number;
+};
 
 type buildDataInterface = {
-  info : info,
-  data : any[]
-}
+  info: info;
+  data: any[];
+};
 
-const buildData = ({ results, skip, limit, currentLength, total }: buildDataType) => {
+const buildData = ({
+  results,
+  skip,
+  limit,
+  currentLength,
+  total,
+}: buildDataType) => {
   return {
     info: {
       // currentPage: skip,
@@ -47,7 +53,5 @@ const checkPageLimit = (results: any, limit: number, page: number) => {
 
   return results;
 };
-
-
 
 export { checkPageLimit, buildData, buildDataInterface };
