@@ -2,7 +2,7 @@
   "name": "kmutt-proj-be",
   "version": "1.0.0",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/server.ts",
+    "dev": "cross-env NODE_ENV=development nodemon",
     "build": "tsc -p tsconfig.json && tsc-alias -p tsconfig.json",
     "start": "node dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
