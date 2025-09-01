@@ -26,11 +26,11 @@ class App {
   public routingControllersOption: {
     cors: Object;
     routePrefix: string;
-    controllers: Function[];
+    controllers: string[];
     defaultErrorHandler: false;
   };
 
-  constructor(controllers: Function[]) {
+  constructor(controllers: string[]) {
     try {
       this.app = express();
       this.env = NODE_ENV || 'development';
