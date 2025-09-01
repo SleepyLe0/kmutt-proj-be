@@ -2,7 +2,6 @@ import 'reflect-metadata';
 import express from 'express';
 import {
   CREDENTIALS,
-  HOST,
   LOG_FORMAT,
   NODE_ENV,
   ORIGIN,
@@ -74,7 +73,7 @@ class App {
     this.app.listen(this.port, () => {
       logger.info(`=================================`);
       logger.info(`======= ENV: ${this.env} ========`);
-      logger.info(`Open API docs http://${NODE_ENV === 'development' ? 'localhost' : HOST}:${this.port}/docs`);
+      logger.info(`Open API docs http://localhost:${this.port}/docs`);
       logger.info(`🚀 App listening on the port ${this.port}`);
       logger.info(`=================================`);
     });
