@@ -10,6 +10,7 @@ export const ORIGIN = process.env.CREDENTIALS === 'true';
 export const {
   NODE_ENV,
   PORT,
+  HOST,
   ROUTE_PREFIX,
   LOG_DIR,
   LOG_FORMAT,

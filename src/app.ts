@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import express from 'express';
 import {
   CREDENTIALS,
+  HOST,
   LOG_FORMAT,
   NODE_ENV,
   ORIGIN,
@@ -9,6 +10,7 @@ import {
   ROUTE_PREFIX,
 } from '@config';
 import { connect, set } from 'mongoose';
+import * as swaggerUiExpress from 'swagger-ui-express';
 import { logger, stream } from '@utils/logger';
 import errorMiddleware from '@middlewares/error.middleware';
 import { dbConnection } from '@databases';
@@ -17,7 +19,10 @@ import hpp from 'hpp';
 import helmet from 'helmet';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
-import { useExpressServer } from 'routing-controllers';
+import { getMetadataArgsStorage, useExpressServer } from 'routing-controllers';
+import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
+import { routingControllersToSpec } from 'routing-controllers-openapi';
+const { defaultMetadataStorage } = require('class-transformer/cjs/storage')
 
 class App {
   public app: express.Application;
@@ -58,6 +63,7 @@ class App {
       };
 
       this.initializeRoutes();
+      this.initializeSwagger();
       this.initializeErrorHandling();
     } catch (error) {
       logger.error(error);
@@ -68,6 +74,7 @@ class App {
     this.app.listen(this.port, () => {
       logger.info(`=================================`);
       logger.info(`======= ENV: ${this.env} ========`);
+      logger.info(`Open API docs http://${NODE_ENV === 'development' ? 'localhost' : HOST}:${this.port}/docs`);
       logger.info(`🚀 App listening on the port ${this.port}`);
       logger.info(`=================================`);
     });
@@ -107,6 +114,35 @@ class App {
 
   private initializeRoutes() {
     useExpressServer(this.app, this.routingControllersOption);
+  }
+
+  private initializeSwagger() {    
+    // Parse class-validator classes into JSON Schema:
+    const schemas : any = validationMetadatasToSchemas({
+      classTransformerMetadataStorage: defaultMetadataStorage,
+      refPointerPrefix: '#/components/schemas/',
+    })
+
+    const storage = getMetadataArgsStorage()
+    const spec = routingControllersToSpec(storage, this.routingControllersOption, {
+      components: {
+        schemas,
+        securitySchemes: {
+          basicAuth: {
+            scheme: 'bearer',
+            type: 'http',
+          },
+        },
+      },
+      info: {
+        description: 'Generated with `routing-controllers-openapi`',
+        title: 'A sample API',
+        version: '1.0.0',
+      },
+    })
+
+
+    this.app.use('/docs', swaggerUiExpress.serve, swaggerUiExpress.setup(spec))
   }
 
   private initializeErrorHandling() {
