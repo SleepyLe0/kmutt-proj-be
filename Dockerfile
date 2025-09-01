@@ -1,24 +1,15 @@
-# Common build stage
-FROM node:20-alpine AS common-build-stage
-
-COPY . ./app
+FROM node:20-alpine
 
 WORKDIR /app
 
-RUN npm install --legacy-peer-deps
+COPY package*.json tsconfig.json ./
 
-EXPOSE 3000
+RUN npm ci
 
-# Development build stage
-FROM common-build-stage AS development-build-stage
+COPY src ./src
 
-ENV NODE_ENV=development
+RUN npm run build          # 👈 runs tsc + tsc-alias
 
-CMD ["npm", "run", "dev"]
+EXPOSE 4000
 
-# Production build stage
-FROM common-build-stage AS production-build-stage
-
-ENV NODE_ENV=production
-
-CMD ["npm", "run", "start"]
+CMD ["npm", "start"]
