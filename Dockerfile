@@ -1,20 +1,11 @@
 # Common build stage
 FROM node:20-alpine AS common-build-stage
 
-# Set working directory
+COPY . ./app
+
 WORKDIR /app
 
-# Copy package files first for better caching
-COPY package*.json ./
-
-# Install dependencies with legacy peer deps to avoid conflicts
 RUN npm install --legacy-peer-deps
-
-# Copy source code
-COPY . .
-
-# Build the application
-RUN npm run build
 
 EXPOSE 3000
 
