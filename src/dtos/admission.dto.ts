@@ -2,7 +2,6 @@ import {
   IsString,
   IsNotEmpty,
   IsOptional,
-  IsBoolean,
   IsNumber,
   IsArray,
   ValidateNested,
@@ -58,8 +57,8 @@ export class RoundDto {
 
 export class MonthlyDto {
   @IsNotEmpty()
-  @IsNumber()
-  month: number;
+  @IsString()
+  month: string;
 
   @IsNotEmpty()
   @IsDateString()

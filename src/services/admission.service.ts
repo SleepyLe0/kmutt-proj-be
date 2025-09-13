@@ -68,7 +68,7 @@ class AdmissionService extends MainService {
           semester: term.semester,
           academic_year_th: term.academic_year_th,
           label: term.label ?? `${term.semester}/${term.academic_year_th}`,
-          sort_key: term.sort_key ?? `${term.academic_year_th}.${term.semester}`
+          sort_key: term.sort_key ?? Number(`${term.academic_year_th}.${term.semester}`)
         },
         active: new Date(application_window.open_at) < new Date() ? true : false,
         application_window: {

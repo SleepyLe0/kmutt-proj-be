@@ -54,7 +54,7 @@ const admissionSchema: Schema = new Schema({
   }],
   monthly: [{
     month: {
-      type: Number,
+      type: String,
       required: true,
     },
     interview_date: {

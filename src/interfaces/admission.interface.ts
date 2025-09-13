@@ -20,7 +20,7 @@ export interface Admission {
     interview_date: string;
   }[];
   monthly: {
-    month: number;
+    month: string;
     interview_date: string;
   }[];
   created_at: string;
