@@ -2,12 +2,14 @@ import UserModel from '@/models/user.model';
 import FacultyModel from '@/models/faculty.model';
 import DepartmentModel from '@/models/department.model';
 import ProgramModel from '@/models/program.model';
+import AdmissionModel from '@/models/admission.model';
 
 export interface IModels {
   user: typeof UserModel;
   faculty: typeof FacultyModel;
   department: typeof DepartmentModel;
   program: typeof ProgramModel;
+  admission: typeof AdmissionModel;
 }
 
 export default class MainService {
@@ -19,6 +21,7 @@ export default class MainService {
       faculty: FacultyModel,
       department: DepartmentModel,
       program: ProgramModel,
+      admission: AdmissionModel,
     };
   }
 }
