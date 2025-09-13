@@ -21,7 +21,7 @@ import cookieParser from 'cookie-parser';
 import { getMetadataArgsStorage, useExpressServer } from 'routing-controllers';
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
 import { routingControllersToSpec } from 'routing-controllers-openapi';
-const { defaultMetadataStorage } = require('class-transformer/cjs/storage')
+import { defaultMetadataStorage } from 'class-transformer/cjs/storage';
 
 class App {
   public app: express.Application;
@@ -106,8 +106,6 @@ class App {
       })
     );
     this.app.use(compression());
-    // this.app.use(express.json());
-    // this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cookieParser());
   }
 
@@ -139,7 +137,6 @@ class App {
         version: '1.0.0',
       },
     })
-
 
     this.app.use('/docs', swaggerUiExpress.serve, swaggerUiExpress.setup(spec))
   }
