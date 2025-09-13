@@ -3,6 +3,7 @@ import MainService from './main.service';
 import { Faculty } from '@/interfaces/faculty.interface';
 import { buildData } from '@/utils/pagination';
 import { CreateFacultyDto, UpdateFacultyDto } from '@/dtos/faculty.dto';
+import { HttpException } from '@/exceptions/HttpException';
 
 class FacultyService extends MainService {
   public async findAll({
@@ -56,25 +57,25 @@ class FacultyService extends MainService {
       const checkExistFaculty = await this.model.faculty.findOne({
         title: createFacultyDto.title,
       });
-      if (!checkExistFaculty) {
-        const createFaculty = await this.model.faculty.create({
-          ...createFacultyDto,
-          created_at: new Date(),
-          updated_at: new Date(),
-        });
-        return createFaculty;
+
+      if (checkExistFaculty) {
+        throw new HttpException(409, 'Faculty with this title already exists');
       }
-      throw new Error('Faculty with this title already exists');
+
+      const createFaculty = await this.model.faculty.create({
+        ...createFacultyDto,
+        created_at: new Date(),
+        updated_at: new Date(),
+      });
+      
+      return createFaculty;
     } catch (error) {
       console.error(error);
       throw error;
     }
   }
 
-  public async update(
-    id: string,
-    updateFacultyDto: UpdateFacultyDto
-  ): Promise<Faculty> {
+  public async update(id: string, updateFacultyDto: UpdateFacultyDto): Promise<Faculty> {
     try {
       const updatedFaculty = await this.model.faculty.findByIdAndUpdate(
         id,

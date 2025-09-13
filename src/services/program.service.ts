@@ -3,6 +3,7 @@ import MainService from './main.service';
 import { Program } from '@/interfaces/program.interface';
 import { buildData } from '@/utils/pagination';
 import { CreateProgramDto, UpdateProgramDto } from '@/dtos/program.dto';
+import { HttpException } from '@/exceptions/HttpException';
 
 class ProgramService extends MainService {
   public async findAll({
@@ -104,7 +105,7 @@ class ProgramService extends MainService {
         createProgramDto.faculty_id
       );
       if (!facultyExists) {
-        throw new Error('Faculty not found');
+        throw new HttpException(404, 'Faculty not found');
       }
 
       // Check if department exists if provided
@@ -113,7 +114,7 @@ class ProgramService extends MainService {
           createProgramDto.department_id
         );
         if (!departmentExists) {
-          throw new Error('Department not found');
+          throw new HttpException(404, 'Department not found');
         }
       }
 
@@ -122,15 +123,17 @@ class ProgramService extends MainService {
         faculty_id: createProgramDto.faculty_id,
       });
 
-      if (!checkExistProgram) {
-        const createProgram = await this.model.program.create({
-          ...createProgramDto,
-          created_at: new Date(),
-          updated_at: new Date(),
-        });
-        return await this.findById(createProgram._id.toString());
+      if (checkExistProgram) {
+        throw new HttpException(409, 'Program with this title already exists in this faculty');
       }
-      throw new Error('Program with this title already exists in this faculty');
+      
+      const createProgram = await this.model.program.create({
+        ...createProgramDto,
+        created_at: new Date(),
+        updated_at: new Date(),
+      });
+
+      return await this.findById(createProgram._id.toString());
     } catch (error) {
       console.error(error);
       throw error;
@@ -148,7 +151,7 @@ class ProgramService extends MainService {
           updateProgramDto.faculty_id
         );
         if (!facultyExists) {
-          throw new Error('Faculty not found');
+          throw new HttpException(404, 'Faculty not found');
         }
       }
 
@@ -158,7 +161,7 @@ class ProgramService extends MainService {
           updateProgramDto.department_id
         );
         if (!departmentExists) {
-          throw new Error('Department not found');
+          throw new HttpException(404, 'Department not found');
         }
       }
 

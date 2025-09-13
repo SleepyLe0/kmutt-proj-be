@@ -6,6 +6,7 @@ import {
   CreateAdmissionDto,
   UpdateAdmissionDto,
 } from '@/dtos/admission.dto';
+import { HttpException } from '@/exceptions/HttpException';
 
 class AdmissionService extends MainService {
   public async findAll({
@@ -46,46 +47,7 @@ class AdmissionService extends MainService {
     }
   }
 
-  public async findByTerm(
-    semester: number,
-    academicYear: number
-  ): Promise<Admission> {
-    try {
-      return await this.model.admission.findOne({
-        'term.semester': semester,
-        'term.academic_year_th': academicYear,
-      });
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  }
-
-  public async findActive(): Promise<Admission[]> {
-    try {
-      return await this.model.admission
-        .find({ active: true })
-        .sort({ 'term.sort_key': -1, 'term.academic_year_th': -1 });
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  }
-
-  public async findByAcademicYear(academicYear: number): Promise<Admission[]> {
-    try {
-      return await this.model.admission
-        .find({ 'term.academic_year_th': academicYear })
-        .sort({ 'term.sort_key': -1 });
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  }
-
-  public async create(
-    createAdmissionDto: CreateAdmissionDto
-  ): Promise<Admission> {
+  public async create(createAdmissionDto: CreateAdmissionDto): Promise<Admission> {
     try {
       // Check if admission for this term already exists
       const existingAdmission = await this.model.admission.findOne({
@@ -93,43 +55,44 @@ class AdmissionService extends MainService {
         'term.academic_year_th': createAdmissionDto.term.academic_year_th,
       });
 
-      if (!existingAdmission) {
-        const createAdmission = await this.model.admission.create({
-          ...createAdmissionDto,
-          created_at: new Date(),
-          updated_at: new Date(),
-        });
-        return createAdmission;
+      if (existingAdmission) {
+        throw new HttpException(409,
+          'Admission for this semester and academic year already exists'
+        );
       }
-      throw new Error(
-        'Admission for this semester and academic year already exists'
-      );
+
+      const { term, application_window, rounds, monthly } = createAdmissionDto;
+
+      const createAdmission = await this.model.admission.create({
+        term: {
+          semester: term.semester,
+          academic_year_th: term.academic_year_th,
+          label: term.label ?? `${term.semester}/${term.academic_year_th}`,
+          sort_key: term.sort_key ?? `${term.academic_year_th}.${term.semester}`
+        },
+        active: new Date(application_window.open_at) < new Date() ? true : false,
+        application_window: {
+          open_at: application_window.open_at,
+          close_at: application_window.close_at,
+          notice: application_window.notice ?? 
+            `การรับสมัครระดับบัณฑิตศึกษา ภาคการศึกษาที่ ${term.semester}/${term.academic_year_th}`,
+          calendar_url: application_window.calendar_url,
+        },
+        rounds,
+        monthly,
+        created_at: new Date(),
+        updated_at: new Date(),
+      });
+
+      return createAdmission;
     } catch (error) {
       console.error(error);
       throw error;
     }
   }
 
-  public async update(
-    id: string,
-    updateAdmissionDto: UpdateAdmissionDto
-  ): Promise<Admission> {
+  public async update(id: string, updateAdmissionDto: UpdateAdmissionDto): Promise<Admission> {
     try {
-      // If term is being updated, check for conflicts
-      if (updateAdmissionDto.term) {
-        const existingAdmission = await this.model.admission.findOne({
-          _id: { $ne: id },
-          'term.semester': updateAdmissionDto.term.semester,
-          'term.academic_year_th': updateAdmissionDto.term.academic_year_th,
-        });
-
-        if (existingAdmission) {
-          throw new Error(
-            'Another admission for this semester and academic year already exists'
-          );
-        }
-      }
-
       const updatedAdmission = await this.model.admission.findByIdAndUpdate(
         id,
         {
@@ -159,7 +122,7 @@ class AdmissionService extends MainService {
     try {
       const admission = await this.model.admission.findById(id);
       if (!admission) {
-        throw new Error('Admission not found');
+        throw new HttpException(404, 'Admission not found');
       }
 
       const updatedAdmission = await this.model.admission.findByIdAndUpdate(

@@ -3,6 +3,7 @@ import MainService from './main.service';
 import { User } from '@/interfaces/user.interface';
 import { buildData } from '@/utils/pagination';
 import { CreateUserDto } from '@/dtos/user.dto';
+import { HttpException } from '@/exceptions/HttpException';
 
 class UserService extends MainService {
   public async findAll({
@@ -53,15 +54,18 @@ class UserService extends MainService {
       const checkExistUser = await this.model.user.findOne({
         email: createUserDto.email,
       });
-      if (!checkExistUser) {
-        const createUser = await this.model.user.create({
-          ...createUserDto,
-          created_at: new Date(),
-          updated_at: new Date(),
-        });
-        return createUser;
+
+      if (checkExistUser) {
+        throw new HttpException(409, 'User with this email already exists');
       }
-      throw new Error('User with this email already exists');
+
+      const createUser = await this.model.user.create({
+        ...createUserDto,
+        created_at: new Date(),
+        updated_at: new Date(),
+      });
+
+      return createUser;
     } catch (error) {
       console.error(error);
       throw error;

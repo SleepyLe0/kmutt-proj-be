@@ -72,10 +72,6 @@ export class CreateAdmissionDto {
   @Type(() => TermDto)
   term: TermDto;
 
-  @IsOptional()
-  @IsBoolean()
-  active?: boolean;
-
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => ApplicationWindowDto)
@@ -95,15 +91,6 @@ export class CreateAdmissionDto {
 }
 
 export class UpdateAdmissionDto {
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => TermDto)
-  term?: TermDto;
-
-  @IsOptional()
-  @IsBoolean()
-  active?: boolean;
-
   @IsOptional()
   @ValidateNested()
   @Type(() => ApplicationWindowDto)

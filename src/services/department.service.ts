@@ -6,6 +6,7 @@ import {
   CreateDepartmentDto,
   UpdateDepartmentDto,
 } from '@/dtos/department.dto';
+import { HttpException } from '@/exceptions/HttpException';
 
 class DepartmentService extends MainService {
   public async findAll({
@@ -79,7 +80,7 @@ class DepartmentService extends MainService {
         createDepartmentDto.faculty_id
       );
       if (!facultyExists) {
-        throw new Error('Faculty not found');
+        throw new HttpException(404, 'Faculty not found');
       }
 
       const checkExistDepartment = await this.model.department.findOne({
@@ -87,17 +88,17 @@ class DepartmentService extends MainService {
         faculty_id: createDepartmentDto.faculty_id,
       });
 
-      if (!checkExistDepartment) {
-        const createDepartment = await this.model.department.create({
-          ...createDepartmentDto,
-          created_at: new Date(),
-          updated_at: new Date(),
-        });
-        return await this.findById(createDepartment._id.toString());
+      if (checkExistDepartment) {
+        throw new HttpException(409, 'Department with this title already exists in this faculty');
       }
-      throw new Error(
-        'Department with this title already exists in this faculty'
-      );
+
+      const createDepartment = await this.model.department.create({
+        ...createDepartmentDto,
+        created_at: new Date(),
+        updated_at: new Date(),
+      });
+
+      return await this.findById(createDepartment._id.toString());
     } catch (error) {
       console.error(error);
       throw error;
@@ -115,7 +116,7 @@ class DepartmentService extends MainService {
           updateDepartmentDto.faculty_id
         );
         if (!facultyExists) {
-          throw new Error('Faculty not found');
+          throw new HttpException(404, 'Faculty not found');
         }
       }
 
