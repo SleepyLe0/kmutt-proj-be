@@ -13,6 +13,8 @@ import {
   QueryParam,
   Res,
 } from 'routing-controllers';
+import { createFacultyResponse, updateFacultyResponse } from '@/responses/faculty.response';
+import { OpenAPI } from 'routing-controllers-openapi';
 
 @JsonController('/faculty')
 export default class FacultyController {
@@ -45,6 +47,16 @@ export default class FacultyController {
     });
   }
 
+  @OpenAPI({
+    requestBody: {
+      required: true,
+      content: {
+        'application/json': {
+          example: createFacultyResponse
+        }
+      }
+    }
+  })
   @Post('/')
   public async createFaculty(
     @Body() createFacultyDto: CreateFacultyDto,
@@ -58,6 +70,16 @@ export default class FacultyController {
     });
   }
 
+  @OpenAPI({
+    requestBody: {
+      required: true,
+      content: {
+        'application/json': {
+          example: updateFacultyResponse
+        }
+      }
+    }
+  })
   @Put('/:id')
   public async updateFaculty(
     @Param('id') id: string,

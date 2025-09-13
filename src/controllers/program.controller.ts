@@ -13,6 +13,8 @@ import {
   QueryParam,
   Res,
 } from 'routing-controllers';
+import { createProgramResponse, updateProgramResponse } from '@/responses/program.response';
+import { OpenAPI } from 'routing-controllers-openapi';
 
 @JsonController('/program')
 export default class ProgramController {
@@ -81,6 +83,16 @@ export default class ProgramController {
     });
   }
 
+  @OpenAPI({
+    requestBody: {
+      required: true,
+      content: {
+        'application/json': {
+          example: createProgramResponse
+        }
+      }
+    }
+  })
   @Post('/')
   public async createProgram(
     @Body() createProgramDto: CreateProgramDto,
@@ -94,6 +106,16 @@ export default class ProgramController {
     });
   }
 
+  @OpenAPI({
+    requestBody: {
+      required: true,
+      content: {
+        'application/json': {
+          example: updateProgramResponse
+        }
+      }
+    }
+  })
   @Put('/:id')
   public async updateProgram(
     @Param('id') id: string,

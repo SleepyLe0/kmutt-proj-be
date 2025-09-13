@@ -16,6 +16,8 @@ import {
   QueryParam,
   Res,
 } from 'routing-controllers';
+import { createDepartmentResponse, updateDepartmentResponse } from '@/responses/department.response';
+import { OpenAPI } from 'routing-controllers-openapi';
 
 @JsonController('/department')
 export default class DepartmentController {
@@ -63,6 +65,16 @@ export default class DepartmentController {
     });
   }
 
+  @OpenAPI({
+    requestBody: {
+      required: true,
+      content: {
+        'application/json': {
+          example: createDepartmentResponse
+        }
+      }
+    }
+  })
   @Post('/')
   public async createDepartment(
     @Body() createDepartmentDto: CreateDepartmentDto,
@@ -76,6 +88,16 @@ export default class DepartmentController {
     });
   }
 
+  @OpenAPI({
+    requestBody: {
+      required: true,
+      content: {
+        'application/json': {
+          example: updateDepartmentResponse
+        }
+      }
+    }
+  })
   @Put('/:id')
   public async updateDepartment(
     @Param('id') id: string,

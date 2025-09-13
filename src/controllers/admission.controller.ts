@@ -16,6 +16,8 @@ import {
   QueryParam,
   Res,
 } from 'routing-controllers';
+import { createAdmissionResponse, updateAdmissionResponse } from '@/responses/admission.response';
+import { OpenAPI } from 'routing-controllers-openapi';
 
 @JsonController('/admission')
 export default class AdmissionController {
@@ -51,6 +53,16 @@ export default class AdmissionController {
     });
   }
 
+  @OpenAPI({
+    requestBody: {
+      required: true,
+      content: {
+        'application/json': {
+          example: createAdmissionResponse
+        }
+      }
+    }
+  })
   @Post('/')
   public async createAdmission(
     @Body() createAdmissionDto: CreateAdmissionDto,
@@ -64,6 +76,16 @@ export default class AdmissionController {
     });
   }
 
+  @OpenAPI({
+    requestBody: {
+      required: true,
+      content: {
+        'application/json': {
+          example: updateAdmissionResponse
+        }
+      }
+    }
+  })
   @Put('/:id')
   public async updateAdmission(
     @Param('id') id: string,

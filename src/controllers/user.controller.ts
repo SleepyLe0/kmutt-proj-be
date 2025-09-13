@@ -13,6 +13,8 @@ import {
   QueryParam,
   Res,
 } from 'routing-controllers';
+import { createUserResponse, updateUserResponse } from '@/responses/user.response';
+import { OpenAPI } from 'routing-controllers-openapi';
 
 @JsonController('/user')
 export default class UserController {
@@ -45,6 +47,16 @@ export default class UserController {
     });
   }
 
+  @OpenAPI({
+    requestBody: {
+      required: true,
+      content: {
+        'application/json': {
+          example: createUserResponse
+        }
+      }
+    }
+  })
   @Post('/')
   public async createUser(
     @Body() createUserDto: CreateUserDto,
@@ -58,6 +70,16 @@ export default class UserController {
     });
   }
 
+  @OpenAPI({
+    requestBody: {
+      required: true,
+      content: {
+        'application/json': {
+          example: updateUserResponse
+        }
+      }
+    }
+  })
   @Put('/:id')
   public async updateUser(
     @Param('id') id: string,
