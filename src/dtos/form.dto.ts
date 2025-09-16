@@ -42,10 +42,6 @@ export class IntakeDegreeStructureDto {
 
 export class IntakeRoundDto {
   @IsNotEmpty()
-  @IsBoolean()
-  active: boolean;
-
-  @IsNotEmpty()
   @IsNumber()
   @Min(1)
   no: number;
@@ -56,10 +52,6 @@ export class IntakeRoundDto {
 }
 
 export class IntakeMonthlyDto {
-  @IsNotEmpty()
-  @IsBoolean()
-  active: boolean;
-
   @IsNotEmpty()
   @IsString()
   month: string;
@@ -97,19 +89,7 @@ export class SubmitterDto {
   email: string;
 }
 
-export class CreateFormDto {
-  @IsNotEmpty()
-  @IsMongoId()
-  admission_id: string;
-
-  @IsNotEmpty()
-  @IsMongoId()
-  faculty_id: string;
-
-  @IsNotEmpty()
-  @IsMongoId()
-  department_id: string;
-
+export class IntakeProgramDto {
   @IsNotEmpty()
   @IsMongoId()
   program_id: string;
@@ -123,6 +103,29 @@ export class CreateFormDto {
   @ValidateNested()
   @Type(() => IntakeCalendarDto)
   intake_calendar: IntakeCalendarDto;
+}
+
+export class CreateFormDto {
+  @IsNotEmpty()
+  @IsMongoId()
+  user_id: string;
+  @IsNotEmpty()
+  @IsMongoId()
+  admission_id: string;
+
+  @IsNotEmpty()
+  @IsMongoId()
+  faculty_id: string;
+
+  @IsNotEmpty()
+  @IsMongoId()
+  department_id: string;
+
+  @IsNotEmpty()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => IntakeProgramDto)
+  intake_programs: IntakeProgramDto[];
 
   @IsNotEmpty()
   @ValidateNested()
@@ -137,6 +140,9 @@ export class CreateFormDto {
 export class UpdateFormDto {
   @IsOptional()
   @IsMongoId()
+  user_id?: string;
+  @IsOptional()
+  @IsMongoId()
   admission_id?: string;
 
   @IsOptional()
@@ -148,18 +154,10 @@ export class UpdateFormDto {
   department_id?: string;
 
   @IsOptional()
-  @IsMongoId()
-  program_id?: string;
-
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => IntakeDegreeStructureDto)
-  intake_degree?: IntakeDegreeStructureDto;
-
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => IntakeCalendarDto)
-  intake_calendar?: IntakeCalendarDto;
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => IntakeProgramDto)
+  intake_programs?: IntakeProgramDto[];
 
   @IsOptional()
   @ValidateNested()

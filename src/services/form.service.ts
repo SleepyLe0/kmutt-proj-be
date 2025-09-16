@@ -24,7 +24,8 @@ class FormService extends MainService {
         .populate('admission_id', 'term')
         .populate('faculty_id', 'title')
         .populate('department_id', 'title')
-        .populate('program_id', 'title')
+        .populate('user_id', 'firstname lastname email')
+        .populate('intake_programs.program_id', 'title')
         .sort({ created_at: -1 })
         .skip(skip)
         .limit(limit);
@@ -49,7 +50,8 @@ class FormService extends MainService {
         .populate('admission_id', 'term')
         .populate('faculty_id', 'title')
         .populate('department_id', 'title')
-        .populate('program_id', 'title');
+        .populate('user_id', 'firstname lastname email')
+        .populate('intake_programs.program_id', 'title');
     } catch (error) {
       console.error(error);
       throw error;
@@ -63,7 +65,8 @@ class FormService extends MainService {
         .populate('admission_id', 'term')
         .populate('faculty_id', 'title')
         .populate('department_id', 'title')
-        .populate('program_id', 'title')
+        .populate('user_id', 'firstname lastname email')
+        .populate('intake_programs.program_id', 'title')
         .sort({ created_at: -1 });
     } catch (error) {
       console.error(error);
@@ -74,11 +77,12 @@ class FormService extends MainService {
   public async findByProgramId(programId: string): Promise<Form[]> {
     try {
       return await this.model.form
-        .find({ program_id: programId })
+        .find({ 'intake_programs.program_id': programId })
         .populate('admission_id', 'term')
         .populate('faculty_id', 'title')
         .populate('department_id', 'title')
-        .populate('program_id', 'title')
+        .populate('user_id', 'firstname lastname email')
+        .populate('intake_programs.program_id', 'title')
         .sort({ created_at: -1 });
     } catch (error) {
       console.error(error);
@@ -93,7 +97,8 @@ class FormService extends MainService {
         .populate('admission_id', 'term')
         .populate('faculty_id', 'title')
         .populate('department_id', 'title')
-        .populate('program_id', 'title')
+        .populate('user_id', 'firstname lastname email')
+        .populate('intake_programs.program_id', 'title')
         .sort({ created_at: -1 });
     } catch (error) {
       console.error(error);
@@ -103,6 +108,14 @@ class FormService extends MainService {
 
   public async create(createFormDto: CreateFormDto): Promise<Form> {
     try {
+      // Check if user exists
+      const userExists = await this.model.user.findById(
+        createFormDto.user_id
+      );
+      if (!userExists) {
+        throw new HttpException(404, 'User not found');
+      }
+
       // Check if admission exists
       const admissionExists = await this.model.admission.findById(
         createFormDto.admission_id
@@ -127,22 +140,20 @@ class FormService extends MainService {
         throw new HttpException(404, 'Department not found');
       }
 
-      // Check if program exists
-      const programExists = await this.model.program.findById(
-        createFormDto.program_id
-      );
-      if (!programExists) {
-        throw new HttpException(404, 'Program not found');
+      // Validate all program ids and check duplicates within same admission/user
+      const programIds = createFormDto.intake_programs.map(p => p.program_id);
+      const programs = await this.model.program.find({ _id: { $in: programIds } });
+      if (programs.length !== programIds.length) {
+        throw new HttpException(404, 'One or more programs not found');
       }
 
-      // Check if form already exists for this program and admission
       const existingForm = await this.model.form.findOne({
         admission_id: createFormDto.admission_id,
-        program_id: createFormDto.program_id,
+        user_id: createFormDto.user_id,
       });
 
       if (existingForm) {
-        throw new HttpException(409, 'Form already exists for this program and admission');
+        throw new HttpException(409, 'Form already exists for this user and admission');
       }
 
       const createForm = await this.model.form.create({
@@ -196,26 +207,25 @@ class FormService extends MainService {
         }
       }
 
-      // Check if program exists if program_id is being updated
-      if (updateFormDto.program_id) {
-        const programExists = await this.model.program.findById(
-          updateFormDto.program_id
-        );
-        if (!programExists) {
-          throw new HttpException(404, 'Program not found');
+      // Validate programs if intake_programs is being updated
+      if (updateFormDto.intake_programs) {
+        const programIds = updateFormDto.intake_programs.map(p => p.program_id);
+        const programs = await this.model.program.find({ _id: { $in: programIds } });
+        if (programs.length !== programIds.length) {
+          throw new HttpException(404, 'One or more programs not found');
         }
       }
 
-      // Check for duplicate if admission_id or program_id is being updated
-      if (updateFormDto.admission_id || updateFormDto.program_id) {
+      // Check for duplicate if admission_id or user_id is being updated
+      if (updateFormDto.admission_id || updateFormDto.user_id) {
         const duplicateForm = await this.model.form.findOne({
           _id: { $ne: id },
           admission_id: updateFormDto.admission_id || existingForm.admission_id,
-          program_id: updateFormDto.program_id || existingForm.program_id,
+          user_id: updateFormDto.user_id || existingForm.user_id,
         });
 
         if (duplicateForm) {
-          throw new HttpException(409, 'Another form already exists for this program and admission');
+          throw new HttpException(409, 'Another form already exists for this user and admission');
         }
       }
 

@@ -107,7 +107,7 @@ export default class FormController {
     const form = await this.formService.create(createFormDto);
     return res.json({
       status: true,
-      message: `Form for program ${createFormDto.program_id} created successfully`,
+      message: `Form for admission ${createFormDto.admission_id} created successfully`,
       data: form,
     });
   }
