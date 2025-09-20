@@ -25,14 +25,40 @@ export default class FormController {
 
   @Get('/')
   public async getAllForms(
-    @QueryParam('limit') limit: number = 0,
+    @Res() res: Response,
+    @QueryParam('limit') limit: number = 20,
     @QueryParam('page') page: number = 1,
-    @Res() res: Response
+    @QueryParam('search') search?: string,
+    @QueryParam('search_option') search_option?: string,
+    @QueryParam('status') status?: string,
+    @QueryParam('admission_id') admission_id?: string,
+    @QueryParam('faculty_id') faculty_id?: string,
+    @QueryParam('department_id') department_id?: string,
+    @QueryParam('program_id') program_id?: string,
+    @QueryParam('submitter_name') submitter_name?: string,
+    @QueryParam('submitter_email') submitter_email?: string,
+    @QueryParam('date_start') date_start?: string,
+    @QueryParam('date_end') date_end?: string,
+    @QueryParam('sort') sort?: number,
+    @QueryParam('sort_option') sort_option?: string,
   ) {
     const paginationParams: paginationDto = {
       limit,
       page,
       skip: (page - 1) * limit,
+      search,
+      search_option,
+      status,
+      admission_id,
+      faculty_id,
+      department_id,
+      program_id,
+      submitter_name,
+      submitter_email,
+      date_start,
+      date_end,
+      sort,
+      sort_option,
     };
 
     return res.json({

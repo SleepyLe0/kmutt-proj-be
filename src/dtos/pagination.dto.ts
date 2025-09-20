@@ -55,4 +55,34 @@ export class paginationDto {
   @IsOptional()
   @IsString()
   filter_type?: string;
+
+  // Form-specific filters
+  @IsOptional()
+  @IsString()
+  status?: string;
+
+  @IsOptional()
+  @IsString()
+  admission_id?: string;
+
+  @IsOptional()
+  @IsString()
+  faculty_id?: string;
+
+  @IsOptional()
+  @IsString()
+  department_id?: string;
+
+  @IsOptional()
+  @IsString()
+  program_id?: string;
+
+
+  @IsOptional()
+  @IsString()
+  submitter_name?: string;
+
+  @IsOptional()
+  @IsString()
+  submitter_email?: string;
 }
