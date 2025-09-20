@@ -2,18 +2,23 @@ import { User } from '@/interfaces/user.interface';
 import { Document, model, Schema } from 'mongoose';
 
 const userSchema: Schema = new Schema({
-  firstname: {
+  google_id: {
     type: String,
     required: true,
-  },
-  lastname: {
-    type: String,
-    required: true,
+    unique: true,
   },
   email: {
     type: String,
     required: true,
     unique: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  picture: {
+    type: String,
+    required: false,
   },
   role: {
     type: String,
@@ -21,11 +26,11 @@ const userSchema: Schema = new Schema({
     enum: ['admin', 'user'],
   },
   created_at: {
-    type: Date,
+    type: String,
     default: Date.now(),
   },
   updated_at: {
-    type: Date,
+    type: String,
     default: Date.now(),
   },
 });

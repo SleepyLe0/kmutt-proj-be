@@ -1,5 +1,4 @@
 import { paginationDto } from '@/dtos/pagination.dto';
-import { CreateUserDto } from '@/dtos/user.dto';
 import UserService from '@/services/user.service';
 import { Response } from 'express';
 import {
@@ -13,8 +12,6 @@ import {
   QueryParam,
   Res,
 } from 'routing-controllers';
-import { createUserResponse, updateUserResponse } from '@/responses/user.response';
-import { OpenAPI } from 'routing-controllers-openapi';
 
 @JsonController('/user')
 export default class UserController {
@@ -44,62 +41,6 @@ export default class UserController {
     return res.json({
       status: true,
       data: user,
-    });
-  }
-
-  @OpenAPI({
-    requestBody: {
-      required: true,
-      content: {
-        'application/json': {
-          example: createUserResponse
-        }
-      }
-    }
-  })
-  @Post('/')
-  public async createUser(
-    @Body() createUserDto: CreateUserDto,
-    @Res() res: Response
-  ) {
-    const user = await this.userService.create(createUserDto);
-    return res.json({
-      status: true,
-      message: `Email ${createUserDto.email} have sign-up successfully`,
-      data: user,
-    });
-  }
-
-  @OpenAPI({
-    requestBody: {
-      required: true,
-      content: {
-        'application/json': {
-          example: updateUserResponse
-        }
-      }
-    }
-  })
-  @Put('/:id')
-  public async updateUser(
-    @Param('id') id: string,
-    @Body() updateUserDto: any,
-    @Res() res: Response
-  ) {
-    const user = await this.userService.update(id, updateUserDto);
-    return res.json({
-      status: true,
-      message: 'User updated successfully',
-      data: user,
-    });
-  }
-
-  @Delete('/:id')
-  public async deleteUser(@Param('id') id: string, @Res() res: Response) {
-    const result = await this.userService.delete(id);
-    return res.json({
-      status: true,
-      message: result ? 'User deleted successfully' : 'User not found',
     });
   }
 }

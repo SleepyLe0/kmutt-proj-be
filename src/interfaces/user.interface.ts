@@ -2,10 +2,11 @@ import mongoose from 'mongoose';
 
 export interface User {
   _id: string | mongoose.ObjectId;
-  firstname: string;
-  lastname: string;
+  google_id: string;
   email: string;
-  role: string;
+  name: string;
+  picture?: string;
+  role: 'user' | 'admin';
   created_at: string;
   updated_at: string;
 }
