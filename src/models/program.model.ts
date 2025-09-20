@@ -24,6 +24,11 @@ const programSchema: Schema = new Schema({
     type: String,
     required: true,
   },
+  degree_req: {
+    type: String,
+    required: false,
+    enum: ['bachelor', 'master'],
+  },
   active: {
     type: Boolean,
     default: true,

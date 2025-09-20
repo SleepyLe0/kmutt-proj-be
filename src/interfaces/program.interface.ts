@@ -7,6 +7,7 @@ export interface Program {
   title: string;
   degree_level: 'master' | 'doctoral';
   degree_abbr: string;
+  degree_req?: 'bachelor' | 'master';
   active: boolean;
   created_at: string;
   updated_at: string;
