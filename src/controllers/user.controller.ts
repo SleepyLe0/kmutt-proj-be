@@ -1,4 +1,3 @@
-import { paginationDto } from '@/dtos/pagination.dto';
 import { RequestWithUser } from '@/dtos/request.dto';
 import authMiddleware from '@/middlewares/auth.middleware';
 import { requireRole } from '@/middlewares/role.middleware';
@@ -7,8 +6,6 @@ import { Response } from 'express';
 import {
   Get,
   JsonController,
-  Param,
-  QueryParam,
   Req,
   Res,
   UseBefore,
@@ -19,33 +16,6 @@ import {
 @UseBefore(authMiddleware)
 export default class UserController {
   private userService = new UserService();
-
-  @Get('/')
-  public async getAllUsers(
-    @QueryParam('limit') limit: number = 0,
-    @QueryParam('page') page: number = 1,
-    @Res() res: Response
-  ) {
-    const paginationParams: paginationDto = {
-      limit,
-      page,
-      skip: (page - 1) * limit,
-    };
-
-    return res.json({
-      status: true,
-      ...(await this.userService.findAll(paginationParams)),
-    });
-  }
-
-  @Get('/:id')
-  public async getUserById(@Param('id') id: string, @Res() res: Response) {
-    const user = await this.userService.findById(id);
-    return res.json({
-      status: true,
-      data: user,
-    });
-  }
 
   @Get('/profile')
   public async getProfileUser(@Req() req: RequestWithUser, @Res() res: Response) {
