@@ -139,6 +139,21 @@ class AdmissionService extends MainService {
       throw error;
     }
   }
+
+  public async checkWindowApplicationCloseTime() {
+    try {
+      await this.model.admission.updateMany(
+        {
+          active: true,
+          "application_window.close_at": { $lte: new Date() }
+        },
+        { $set: { active: false, updated_at: new Date() } }
+      );
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
 }
 
 export default AdmissionService;

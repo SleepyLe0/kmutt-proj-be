@@ -22,6 +22,7 @@ import { getMetadataArgsStorage, useExpressServer } from 'routing-controllers';
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
 import { routingControllersToSpec } from 'routing-controllers-openapi';
 import { defaultMetadataStorage } from 'class-transformer/cjs/storage';
+import agenda from './jobs/agenda/agenda';
 
 class App {
   public app: express.Application;
@@ -91,6 +92,7 @@ class App {
     connect(dbConnection.url)
       .then(async () => {
         logger.info(`Connected to MongoDB!`);
+        await agenda.start();
       })
       .catch(err => {
         logger.error(err);
