@@ -19,16 +19,17 @@ import {
 } from 'routing-controllers';
 import { createFormResponse, updateFormResponse } from '@/responses/form.response';
 import { OpenAPI } from 'routing-controllers-openapi';
-import validationMiddleware from '@/middlewares/validation.middleware';
+import { requireRole } from '@/middlewares/role.middleware';
 import authMiddleware from '@/middlewares/auth.middleware';
 
-@JsonController('/form')
+@JsonController('/admin/form')
+@UseBefore(requireRole('admin'))
 @UseBefore(authMiddleware)
 export default class FormController {
   private formService = new FormService();
 
   @Get('/')
-  public async getAllFormsByUser(
+  public async getAllForms(
     @Res() res: Response,
     @QueryParam('limit') limit: number = 20,
     @QueryParam('page') page: number = 1,
@@ -130,7 +131,6 @@ export default class FormController {
     }
   })
   @Post('/')
-  @UseBefore(validationMiddleware(CreateFormDto, 'body'))
   public async createForm(
     @Body() createFormDto: CreateFormDto,
     @Res() res: Response
@@ -154,7 +154,6 @@ export default class FormController {
     }
   })
   @Put('/:id')
-  @UseBefore(validationMiddleware(UpdateFormDto, 'body'))
   public async updateForm(
     @Param('id') id: string,
     @Body() updateFormDto: UpdateFormDto,

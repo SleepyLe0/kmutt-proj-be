@@ -12,11 +12,14 @@ import {
   Put,
   QueryParam,
   Res,
+  UseBefore,
 } from 'routing-controllers';
 import { createFacultyResponse, updateFacultyResponse } from '@/responses/faculty.response';
 import { OpenAPI } from 'routing-controllers-openapi';
+import authMiddleware from '@/middlewares/auth.middleware';
 
 @JsonController('/faculty')
+@UseBefore(authMiddleware)
 export default class FacultyController {
   private facultyService = new FacultyService();
 

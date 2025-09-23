@@ -15,11 +15,14 @@ import {
   Put,
   QueryParam,
   Res,
+  UseBefore,
 } from 'routing-controllers';
 import { createDepartmentResponse, updateDepartmentResponse } from '@/responses/department.response';
 import { OpenAPI } from 'routing-controllers-openapi';
+import authMiddleware from '@/middlewares/auth.middleware';
 
 @JsonController('/department')
+@UseBefore(authMiddleware)
 export default class DepartmentController {
   private departmentService = new DepartmentService();
 

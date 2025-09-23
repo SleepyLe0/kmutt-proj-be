@@ -12,11 +12,14 @@ import {
   Put,
   QueryParam,
   Res,
+  UseBefore,
 } from 'routing-controllers';
 import { createProgramResponse, updateProgramResponse } from '@/responses/program.response';
 import { OpenAPI } from 'routing-controllers-openapi';
+import authMiddleware from '@/middlewares/auth.middleware';
 
 @JsonController('/program')
+@UseBefore(authMiddleware)
 export default class ProgramController {
   private programService = new ProgramService();
 

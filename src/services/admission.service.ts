@@ -47,6 +47,18 @@ class AdmissionService extends MainService {
     }
   }
 
+  public async findCurrentActive() {
+    try {
+      return await this.model.admission
+        .find({ active: true })
+        .sort({ "term.sort_key": -1 })
+        .limit(1);
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
   public async create(createAdmissionDto: CreateAdmissionDto): Promise<Admission> {
     try {
       // Check if admission for this term already exists

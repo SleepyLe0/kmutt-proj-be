@@ -1,4 +1,6 @@
 import { paginationDto } from '@/dtos/pagination.dto';
+import authMiddleware from '@/middlewares/auth.middleware';
+import { requireRole } from '@/middlewares/role.middleware';
 import UserService from '@/services/user.service';
 import { Response } from 'express';
 import {
@@ -11,9 +13,12 @@ import {
   Put,
   QueryParam,
   Res,
+  UseBefore,
 } from 'routing-controllers';
 
-@JsonController('/user')
+@JsonController('/admin/user')
+@UseBefore(requireRole('admin'))
+@UseBefore(authMiddleware)
 export default class UserController {
   private userService = new UserService();
 
