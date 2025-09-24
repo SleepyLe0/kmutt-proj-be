@@ -7,6 +7,7 @@ import {
   ORIGIN,
   PORT,
   ROUTE_PREFIX,
+  SITE,
 } from '@config';
 import { connect, set } from 'mongoose';
 import * as swaggerUiExpress from 'swagger-ui-express';
@@ -74,7 +75,7 @@ class App {
     this.app.listen(this.port, () => {
       logger.info(`=================================`);
       logger.info(`======= ENV: ${this.env} ========`);
-      logger.info(`Open API docs http://localhost:${this.port}/docs`);
+      if (SITE === 'dev') logger.info(`Open API docs http://localhost:${this.port}/docs`);
       logger.info(`🚀 App listening on the port ${this.port}`);
       logger.info(`=================================`);
     });

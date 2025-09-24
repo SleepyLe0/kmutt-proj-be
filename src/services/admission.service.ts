@@ -84,8 +84,8 @@ class AdmissionService extends MainService {
         },
         active: new Date(application_window.open_at) < new Date() ? true : false,
         application_window: {
-          open_at: application_window.open_at,
-          close_at: application_window.close_at,
+          open_at: new Date(application_window.open_at),
+          close_at: new Date(application_window.close_at),
           notice: application_window.notice ?? 
             `การรับสมัครระดับบัณฑิตศึกษา ภาคการศึกษาที่ ${term.semester}/${term.academic_year_th}`,
           calendar_url: application_window.calendar_url,
@@ -105,11 +105,23 @@ class AdmissionService extends MainService {
 
   public async update(id: string, updateAdmissionDto: UpdateAdmissionDto): Promise<Admission> {
     try {
+      const { application_window, rounds, monthly } = updateAdmissionDto;
       const updatedAdmission = await this.model.admission.findByIdAndUpdate(
         id,
         {
-          ...updateAdmissionDto,
-          updated_at: new Date(),
+          ...(application_window && 
+            {
+              application_window: {
+                open_at: new Date(application_window.open_at),
+                close_at: new Date(application_window.close_at),
+                notice: application_window.notice,
+                calendar_url: application_window.calendar_url, 
+              }
+            }
+          ),
+          ...(monthly && { monthly } ),
+          ...(rounds && { rounds } ),
+          ...((application_window || monthly || rounds) && { updated_at: new Date() }),
         },
         { new: true }
       );

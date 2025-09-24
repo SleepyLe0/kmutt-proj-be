@@ -8,6 +8,7 @@ export const CREDENTIALS = process.env.CREDENTIALS === 'true';
 export const ORIGIN = process.env.CREDENTIALS === 'true';
 
 export const {
+  SITE,
   NODE_ENV,
   PORT,
   ROUTE_PREFIX,
