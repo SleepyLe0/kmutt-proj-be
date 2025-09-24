@@ -291,60 +291,10 @@ class FormService extends MainService {
     }
   }
 
-  public async findByAdmissionId(admissionId: string): Promise<Form[]> {
-    try {
-      return await this.model.form
-        .find({ admission_id: admissionId })
-        .populate('admission_id', 'term')
-        .populate('faculty_id', 'title')
-        .populate('department_id', 'title')
-        .populate('user_id', 'name email')
-        .populate('intake_programs.program_id', 'title')
-        .sort({ created_at: -1 });
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  }
-
-  public async findByProgramId(programId: string): Promise<Form[]> {
-    try {
-      return await this.model.form
-        .find({ 'intake_programs.program_id': programId })
-        .populate('admission_id', 'term')
-        .populate('faculty_id', 'title')
-        .populate('department_id', 'title')
-        .populate('user_id', 'name email')
-        .populate('intake_programs.program_id', 'title')
-        .sort({ created_at: -1 });
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  }
-
-  public async findByStatus(status: 'received' | 'verified'): Promise<Form[]> {
-    try {
-      return await this.model.form
-        .find({ status })
-        .populate('admission_id', 'term')
-        .populate('faculty_id', 'title')
-        .populate('department_id', 'title')
-        .populate('user_id', 'name email')
-        .populate('intake_programs.program_id', 'title')
-        .sort({ created_at: -1 });
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  }
-
-  public async create(createFormDto: CreateFormDto): Promise<Form> {
+  public async create(userId: string, createFormDto: CreateFormDto): Promise<Form> {
     try {
       // Check if user exists
-      const userExists = await this.model.user.findById(
-        createFormDto.user_id
-      );
+      const userExists = await this.model.user.findById(userId);
       if (!userExists) {
         throw new HttpException(404, 'User not found');
       }
@@ -380,15 +330,6 @@ class FormService extends MainService {
         throw new HttpException(404, 'One or more programs not found');
       }
 
-      const existingForm = await this.model.form.findOne({
-        admission_id: createFormDto.admission_id,
-        user_id: createFormDto.user_id,
-      });
-
-      if (existingForm) {
-        throw new HttpException(409, 'Form already exists for this user and admission');
-      }
-
       const createForm = await this.model.form.create({
         ...createFormDto,
         created_at: new Date(),
@@ -402,12 +343,18 @@ class FormService extends MainService {
     }
   }
 
-  public async update(id: string, updateFormDto: UpdateFormDto): Promise<Form> {
+  public async update(id: string, userId: string, updateFormDto: UpdateFormDto): Promise<Form> {
     try {
       // Check if form exists
       const existingForm = await this.model.form.findById(id);
       if (!existingForm) {
         throw new HttpException(404, 'Form not found');
+      }
+
+      // Check update permission
+      const user = await this.model.user.findById(userId);
+      if (user.role !== 'admin' && user._id !== existingForm.user_id) {
+        throw new HttpException(403, 'You do not have permission to update this form')
       }
 
       // Check if admission exists if admission_id is being updated
@@ -482,29 +429,6 @@ class FormService extends MainService {
     try {
       const result = await this.model.form.findByIdAndDelete(id);
       return !!result;
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  }
-
-  public async updateStatus(id: string, status: 'received' | 'verified'): Promise<Form> {
-    try {
-      const form = await this.model.form.findById(id);
-      if (!form) {
-        throw new HttpException(404, 'Form not found');
-      }
-
-      const updatedForm = await this.model.form.findByIdAndUpdate(
-        id,
-        {
-          status,
-          updated_at: new Date(),
-        },
-        { new: true }
-      );
-
-      return await this.findById(updatedForm._id.toString());
     } catch (error) {
       console.error(error);
       throw error;

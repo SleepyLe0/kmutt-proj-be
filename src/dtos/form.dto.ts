@@ -108,10 +108,6 @@ export class IntakeProgramDto {
 export class CreateFormDto {
   @IsNotEmpty()
   @IsMongoId()
-  user_id: string;
-  
-  @IsNotEmpty()
-  @IsMongoId()
   admission_id: string;
 
   @IsNotEmpty()

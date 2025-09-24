@@ -14,6 +14,7 @@ import {
   Post,
   Put,
   QueryParam,
+  Req,
   Res,
   UseBefore,
 } from 'routing-controllers';
@@ -21,6 +22,7 @@ import { createFormResponse, updateFormResponse } from '@/responses/form.respons
 import { OpenAPI } from 'routing-controllers-openapi';
 import validationMiddleware from '@/middlewares/validation.middleware';
 import authMiddleware from '@/middlewares/auth.middleware';
+import { RequestWithUser } from '@/dtos/request.dto';
 
 @JsonController('/form')
 @UseBefore(authMiddleware)
@@ -29,6 +31,7 @@ export default class FormController {
 
   @Get('/')
   public async getAllFormsByUser(
+    @Req() req: RequestWithUser,
     @Res() res: Response,
     @QueryParam('limit') limit: number = 20,
     @QueryParam('page') page: number = 1,
@@ -46,6 +49,8 @@ export default class FormController {
     @QueryParam('sort') sort?: number,
     @QueryParam('sort_option') sort_option?: string,
   ) {
+    const id = req.user._id.toString();
+
     const paginationParams: paginationDto = {
       limit,
       page,
@@ -67,7 +72,7 @@ export default class FormController {
 
     return res.json({
       status: true,
-      ...(await this.formService.findAll(paginationParams)),
+      ...(await this.formService.findAllByUser(id, paginationParams)),
     });
   }
 
@@ -80,42 +85,6 @@ export default class FormController {
     return res.json({
       status: true,
       data: form,
-    });
-  }
-
-  @Get('/admission/:admissionId')
-  public async getFormsByAdmissionId(
-    @Param('admissionId') admissionId: string,
-    @Res() res: Response
-  ) {
-    const forms = await this.formService.findByAdmissionId(admissionId);
-    return res.json({
-      status: true,
-      data: forms,
-    });
-  }
-
-  @Get('/program/:programId')
-  public async getFormsByProgramId(
-    @Param('programId') programId: string,
-    @Res() res: Response
-  ) {
-    const forms = await this.formService.findByProgramId(programId);
-    return res.json({
-      status: true,
-      data: forms,
-    });
-  }
-
-  @Get('/status/:status')
-  public async getFormsByStatus(
-    @Param('status') status: 'received' | 'verified',
-    @Res() res: Response
-  ) {
-    const forms = await this.formService.findByStatus(status);
-    return res.json({
-      status: true,
-      data: forms,
     });
   }
 
@@ -133,9 +102,11 @@ export default class FormController {
   @UseBefore(validationMiddleware(CreateFormDto, 'body'))
   public async createForm(
     @Body() createFormDto: CreateFormDto,
+    @Req() req: RequestWithUser,
     @Res() res: Response
   ) {
-    const form = await this.formService.create(createFormDto);
+    const id = req.user._id.toString();
+    const form = await this.formService.create(id, createFormDto);
     return res.json({
       status: true,
       message: `Form for admission ${createFormDto.admission_id} created successfully`,
@@ -158,26 +129,14 @@ export default class FormController {
   public async updateForm(
     @Param('id') id: string,
     @Body() updateFormDto: UpdateFormDto,
+    @Req() req: RequestWithUser,
     @Res() res: Response
   ) {
-    const form = await this.formService.update(id, updateFormDto);
+    const userId = req.user._id.toString();
+    const form = await this.formService.update(id, userId, updateFormDto);
     return res.json({
       status: true,
       message: 'Form updated successfully',
-      data: form,
-    });
-  }
-
-  @Put('/:id/status')
-  public async updateFormStatus(
-    @Param('id') id: string,
-    @Body() body: { status: 'received' | 'verified' },
-    @Res() res: Response
-  ) {
-    const form = await this.formService.updateStatus(id, body.status);
-    return res.json({
-      status: true,
-      message: `Form status updated to ${body.status} successfully`,
       data: form,
     });
   }
