@@ -64,7 +64,7 @@ class App {
       };
 
       this.initializeRoutes();
-      this.initializeSwagger();
+      if (SITE === 'dev') this.initializeSwagger();
       this.initializeErrorHandling();
     } catch (error) {
       logger.error(error);
@@ -75,7 +75,10 @@ class App {
     this.app.listen(this.port, () => {
       logger.info(`=================================`);
       logger.info(`======= ENV: ${this.env} ========`);
-      if (SITE === 'dev') logger.info(`Open API docs http://localhost:${this.port}/docs`);
+      if (SITE === 'dev') {
+        logger.info(`Open API docs http://localhost:${this.port}/docs/`);
+        logger.info(`Open API docs for admin http://localhost:${this.port}/docs-admin/`);
+      }
       logger.info(`🚀 App listening on the port ${this.port}`);
       logger.info(`=================================`);
     });
@@ -121,9 +124,9 @@ class App {
     const schemas : any = validationMetadatasToSchemas({
       classTransformerMetadataStorage: defaultMetadataStorage,
       refPointerPrefix: '#/components/schemas/',
-    })
+    });
 
-    const storage = getMetadataArgsStorage()
+    const storage = getMetadataArgsStorage();
     const spec = routingControllersToSpec(storage, this.routingControllersOption, {
       components: {
         schemas,
@@ -136,12 +139,23 @@ class App {
       },
       info: {
         description: 'Generated with `routing-controllers-openapi`',
-        title: 'A sample API',
+        title: 'Admission Form API',
         version: '1.0.0',
       },
-    })
+    });
 
-    this.app.use('/docs', swaggerUiExpress.serve, swaggerUiExpress.setup(spec))
+    const filterPaths = (spec: any, predicate: (p: string) => boolean) => ({
+      ...spec,
+      paths: Object.fromEntries(
+        Object.entries(spec.paths || {}).filter(([path]) => predicate(path)) 
+      ),
+    });
+
+    const adminSpec = filterPaths(spec, (p) => p.startsWith('/api/admin'));
+    const userSpec = filterPaths(spec, (p) => !p.startsWith('/api/admin'));
+
+    this.app.use('/docs', swaggerUiExpress.serveFiles(userSpec, {}), swaggerUiExpress.setup(userSpec))
+    this.app.use('/docs-admin', swaggerUiExpress.serveFiles(adminSpec, {}), swaggerUiExpress.setup(adminSpec))
   }
 
   private initializeErrorHandling() {
