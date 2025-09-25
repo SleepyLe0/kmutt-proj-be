@@ -40,19 +40,21 @@ class AuthService extends MainService {
 
   public async findOrCreateUser(googleProfile: GoogleProfile): Promise<User> {
     try {
-      let user = await this.model.user.findOne({ googleId: googleProfile.google_id });
+      let user = await this.model.user.findOne({ google_id: googleProfile.google_id });
     
       if (!user) {
         // Check if this email should be an admin (you can modify this logic)
         const isAdmin = this.checkIfAdmin(googleProfile.email);
         
-        await this.model.user.create({
+        const newUser = await this.model.user.create({
           google_id: googleProfile.google_id,
           email: googleProfile.email,
           name: googleProfile.name,
           picture: googleProfile.picture,
           role: isAdmin ? 'admin' : 'user'
         });
+
+        return newUser;
       }
       
       return user;
