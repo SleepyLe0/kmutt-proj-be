@@ -27,7 +27,7 @@ class AuthService extends MainService {
       if (!payload) throw new HttpException(400, 'Invalid token payload');
 
       return {
-        googleId: payload.sub,
+        google_id: payload.sub,
         email: payload.email!,
         name: payload.name!,
         picture: payload.picture
@@ -40,14 +40,14 @@ class AuthService extends MainService {
 
   public async findOrCreateUser(googleProfile: GoogleProfile): Promise<User> {
     try {
-      let user = await this.model.user.findOne({ googleId: googleProfile.googleId });
+      let user = await this.model.user.findOne({ googleId: googleProfile.google_id });
     
       if (!user) {
         // Check if this email should be an admin (you can modify this logic)
         const isAdmin = this.checkIfAdmin(googleProfile.email);
         
         await this.model.user.create({
-          google_id: googleProfile.googleId,
+          google_id: googleProfile.google_id,
           email: googleProfile.email,
           name: googleProfile.name,
           picture: googleProfile.picture,

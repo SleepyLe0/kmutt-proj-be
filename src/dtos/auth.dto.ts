@@ -10,7 +10,7 @@ export class GoogleAuthRequest {
 }
 
 export class GoogleProfile {
-  googleId: string;
+  google_id: string;
   email: string;
   name: string;
   picture?: string;
