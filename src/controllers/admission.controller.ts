@@ -8,7 +8,7 @@ import {
 } from 'routing-controllers';
 import authMiddleware from '@/middlewares/auth.middleware';
 
-@JsonController('/admin/admission')
+@JsonController('/admission')
 @UseBefore(authMiddleware)
 export default class AdmissionController {
   private admissionService = new AdmissionService();

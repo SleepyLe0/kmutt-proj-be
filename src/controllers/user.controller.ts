@@ -11,7 +11,7 @@ import {
   UseBefore,
 } from 'routing-controllers';
 
-@JsonController('/admin/user')
+@JsonController('/user')
 @UseBefore(requireRole('admin'))
 @UseBefore(authMiddleware)
 export default class UserController {

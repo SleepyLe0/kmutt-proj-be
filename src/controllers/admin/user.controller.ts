@@ -1,13 +1,17 @@
 import { paginationDto } from '@/dtos/pagination.dto';
 import { RequestWithUser } from '@/dtos/request.dto';
+import { UpdateUserRoleDto } from '@/dtos/user.dto';
 import authMiddleware from '@/middlewares/auth.middleware';
 import { requireRole } from '@/middlewares/role.middleware';
+import validationMiddleware from '@/middlewares/validation.middleware';
 import UserService from '@/services/user.service';
 import { Response } from 'express';
 import {
+  Body,
   Get,
   JsonController,
   Param,
+  Put,
   QueryParam,
   Req,
   Res,
@@ -53,6 +57,20 @@ export default class UserController {
     return res.json({
       status: true,
       data: await this.userService.findById(id),
+    });
+  }
+
+  @Put('/role/:id')
+  @UseBefore(validationMiddleware(UpdateUserRoleDto, 'body'))
+  public async updateUserRole(
+    @Param('id') id: string, 
+    @Body() updateUserRoleDto: UpdateUserRoleDto,
+    @Req() req: RequestWithUser, 
+    @Res() res: Response) {
+    const userId = req.user._id.toString()
+    return res.json({
+      status: true,
+      data: await this.userService.updateRole(id, userId, updateUserRoleDto),
     });
   }
 }
