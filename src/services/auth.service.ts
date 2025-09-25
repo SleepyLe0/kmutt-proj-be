@@ -47,7 +47,7 @@ class AuthService extends MainService {
         const isAdmin = this.checkIfAdmin(googleProfile.email);
         
         await this.model.user.create({
-          googleId: googleProfile.googleId,
+          google_id: googleProfile.googleId,
           email: googleProfile.email,
           name: googleProfile.name,
           picture: googleProfile.picture,
