@@ -23,7 +23,6 @@ import { OpenAPI } from 'routing-controllers-openapi';
 import { requireRole } from '@/middlewares/role.middleware';
 import authMiddleware from '@/middlewares/auth.middleware';
 import { RequestWithUser } from '@/dtos/request.dto';
-import validationMiddleware from '@/middlewares/validation.middleware';
 
 @JsonController('/admin/form')
 @UseBefore(requireRole('admin'))
@@ -98,7 +97,6 @@ export default class FormController {
     }
   })
   @Post('/')
-  @UseBefore(validationMiddleware(CreateFormDto, 'body'))
   public async createForm(
     @Body() createFormDto: CreateFormDto,
     @Req() req: RequestWithUser,
@@ -124,7 +122,6 @@ export default class FormController {
     }
   })
   @Put('/:id')
-  @UseBefore(validationMiddleware(UpdateFormDto, 'body'))
   public async updateForm(
     @Param('id') id: string,
     @Body() updateFormDto: UpdateFormDto,

@@ -21,7 +21,6 @@ import { createDepartmentResponse, updateDepartmentResponse } from '@/responses/
 import { OpenAPI } from 'routing-controllers-openapi';
 import authMiddleware from '@/middlewares/auth.middleware';
 import { requireRole } from '@/middlewares/role.middleware';
-import validationMiddleware from '@/middlewares/validation.middleware';
 
 @JsonController('/admin/department')
 @UseBefore(requireRole('admin'))
@@ -82,7 +81,6 @@ export default class DepartmentController {
     }
   })
   @Post('/')
-  @UseBefore(validationMiddleware(CreateDepartmentDto, 'body'))
   public async createDepartment(
     @Body() createDepartmentDto: CreateDepartmentDto,
     @Res() res: Response
@@ -106,7 +104,6 @@ export default class DepartmentController {
     }
   })
   @Put('/:id')
-  @UseBefore(validationMiddleware(UpdateDepartmentDto, 'body'))
   public async updateDepartment(
     @Param('id') id: string,
     @Body() updateDepartmentDto: UpdateDepartmentDto,

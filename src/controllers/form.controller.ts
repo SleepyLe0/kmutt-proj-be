@@ -20,7 +20,6 @@ import {
 } from 'routing-controllers';
 import { createFormResponse, updateFormResponse } from '@/responses/form.response';
 import { OpenAPI } from 'routing-controllers-openapi';
-import validationMiddleware from '@/middlewares/validation.middleware';
 import authMiddleware from '@/middlewares/auth.middleware';
 import { RequestWithUser } from '@/dtos/request.dto';
 
@@ -99,7 +98,6 @@ export default class FormController {
     }
   })
   @Post('/')
-  @UseBefore(validationMiddleware(CreateFormDto, 'body'))
   public async createForm(
     @Body() createFormDto: CreateFormDto,
     @Req() req: RequestWithUser,
@@ -125,7 +123,6 @@ export default class FormController {
     }
   })
   @Put('/:id')
-  @UseBefore(validationMiddleware(UpdateFormDto, 'body'))
   public async updateForm(
     @Param('id') id: string,
     @Body() updateFormDto: UpdateFormDto,

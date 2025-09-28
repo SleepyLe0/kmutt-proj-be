@@ -18,7 +18,6 @@ import { createProgramResponse, updateProgramResponse } from '@/responses/progra
 import { OpenAPI } from 'routing-controllers-openapi';
 import authMiddleware from '@/middlewares/auth.middleware';
 import { requireRole } from '@/middlewares/role.middleware';
-import validationMiddleware from '@/middlewares/validation.middleware';
 
 @JsonController('/admin/program')
 @UseBefore(requireRole('admin'))
@@ -88,7 +87,6 @@ export default class ProgramController {
     }
   })
   @Post('/')
-  @UseBefore(validationMiddleware(CreateProgramDto, 'body'))
   public async createProgram(
     @Body() createProgramDto: CreateProgramDto,
     @Res() res: Response
@@ -112,7 +110,6 @@ export default class ProgramController {
     }
   })
   @Put('/:id')
-  @UseBefore(validationMiddleware(UpdateProgramDto, 'body'))
   public async updateProgram(
     @Param('id') id: string,
     @Body() updateProgramDto: UpdateProgramDto,

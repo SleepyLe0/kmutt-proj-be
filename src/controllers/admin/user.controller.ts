@@ -3,7 +3,6 @@ import { RequestWithUser } from '@/dtos/request.dto';
 import { UpdateUserRoleDto } from '@/dtos/user.dto';
 import authMiddleware from '@/middlewares/auth.middleware';
 import { requireRole } from '@/middlewares/role.middleware';
-import validationMiddleware from '@/middlewares/validation.middleware';
 import UserService from '@/services/user.service';
 import { Response } from 'express';
 import {
@@ -61,7 +60,6 @@ export default class UserController {
   }
 
   @Put('/role/:id')
-  @UseBefore(validationMiddleware(UpdateUserRoleDto, 'body'))
   public async updateUserRole(
     @Param('id') id: string, 
     @Body() updateUserRoleDto: UpdateUserRoleDto,

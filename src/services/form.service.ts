@@ -357,16 +357,6 @@ class FormService extends MainService {
         throw new HttpException(403, 'You do not have permission to update this form')
       }
 
-      // Check if admission exists if admission_id is being updated
-      if (updateFormDto.admission_id) {
-        const admissionExists = await this.model.admission.findById(
-          updateFormDto.admission_id
-        );
-        if (!admissionExists) {
-          throw new HttpException(404, 'Admission not found');
-        }
-      }
-
       // Check if faculty exists if faculty_id is being updated
       if (updateFormDto.faculty_id) {
         const facultyExists = await this.model.faculty.findById(
@@ -393,19 +383,6 @@ class FormService extends MainService {
         const programs = await this.model.program.find({ _id: { $in: programIds } });
         if (programs.length !== programIds.length) {
           throw new HttpException(404, 'One or more programs not found');
-        }
-      }
-
-      // Check for duplicate if admission_id or user_id is being updated
-      if (updateFormDto.admission_id || updateFormDto.user_id) {
-        const duplicateForm = await this.model.form.findOne({
-          _id: { $ne: id },
-          admission_id: updateFormDto.admission_id || existingForm.admission_id,
-          user_id: updateFormDto.user_id || existingForm.user_id,
-        });
-
-        if (duplicateForm) {
-          throw new HttpException(409, 'Another form already exists for this user and admission');
         }
       }
 

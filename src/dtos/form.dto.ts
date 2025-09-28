@@ -137,13 +137,6 @@ export class CreateFormDto {
 export class UpdateFormDto {
   @IsOptional()
   @IsMongoId()
-  user_id?: string;
-  @IsOptional()
-  @IsMongoId()
-  admission_id?: string;
-
-  @IsOptional()
-  @IsMongoId()
   faculty_id?: string;
 
   @IsOptional()

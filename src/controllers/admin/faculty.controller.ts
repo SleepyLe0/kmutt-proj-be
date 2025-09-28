@@ -18,7 +18,6 @@ import { createFacultyResponse, updateFacultyResponse } from '@/responses/facult
 import { OpenAPI } from 'routing-controllers-openapi';
 import authMiddleware from '@/middlewares/auth.middleware';
 import { requireRole } from '@/middlewares/role.middleware';
-import validationMiddleware from '@/middlewares/validation.middleware';
 
 @JsonController('/admin/faculty')
 @UseBefore(requireRole('admin'))
@@ -64,7 +63,6 @@ export default class FacultyController {
     }
   })
   @Post('/')
-  @UseBefore(validationMiddleware(CreateFacultyDto, 'body'))
   public async createFaculty(
     @Body() createFacultyDto: CreateFacultyDto,
     @Res() res: Response
@@ -88,7 +86,6 @@ export default class FacultyController {
     }
   })
   @Put('/:id')
-  @UseBefore(validationMiddleware(UpdateFacultyDto, 'body'))
   public async updateFaculty(
     @Param('id') id: string,
     @Body() updateFacultyDto: UpdateFacultyDto,

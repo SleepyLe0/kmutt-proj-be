@@ -1,5 +1,4 @@
 export const createFormResponse = {
-  "user_id": "64f8b2c1e4b0a12345678901",
   "admission_id": "64f8b2c1e4b0a1234567890a",
   "faculty_id": "64f8b2c1e4b0a1234567890b",
   "department_id": "64f8b2c1e4b0a1234567890c",
@@ -54,6 +53,8 @@ export const createFormResponse = {
 }
 
 export const updateFormResponse = {
+  "faculty_id": "64f8b2c1e4b0a1234567890b",
+  "department_id": "64f8b2c1e4b0a1234567890c",
   "intake_programs": [
     {
       "program_id": "64f8b2c1e4b0a1234567890d",
