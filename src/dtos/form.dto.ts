@@ -29,15 +29,15 @@ export class IntakeDegreeDto {
 }
 
 export class IntakeDegreeStructureDto {
-  @IsNotEmpty()
+  @IsOptional()
   @ValidateNested()
   @Type(() => IntakeDegreeDto)
-  master: IntakeDegreeDto;
+  master?: IntakeDegreeDto;
 
-  @IsNotEmpty()
+  @IsOptional()
   @ValidateNested()
   @Type(() => IntakeDegreeDto)
-  doctoral: IntakeDegreeDto;
+  doctoral?: IntakeDegreeDto;
 }
 
 export class IntakeRoundDto {

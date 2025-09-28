@@ -333,6 +333,7 @@ class FormService extends MainService {
       }
 
       const createForm = await this.model.form.create({
+        user_id: userExists._id,
         ...createFormDto,
         created_at: new Date(),
         updated_at: new Date(),

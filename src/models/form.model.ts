@@ -40,8 +40,8 @@ const intakeProgramSchema = new Schema(
   {
     program_id: { type: Schema.Types.ObjectId, ref: 'Program', required: true },
     intake_degree: {
-      master: { type: intakeDegreeSchema, required: true },
-      doctoral: { type: intakeDegreeSchema, required: true },
+      master: intakeDegreeSchema,
+      doctoral: intakeDegreeSchema, 
     },
     intake_calendar: { type: intakeCalendarSchema, required: true },
   },
