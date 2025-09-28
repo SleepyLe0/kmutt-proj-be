@@ -67,16 +67,15 @@ export class paginationDto {
 
   @IsOptional()
   @IsString()
-  faculty_id?: string;
+  faculty?: string;
 
   @IsOptional()
   @IsString()
-  department_id?: string;
+  department?: string;
 
   @IsOptional()
   @IsString()
-  program_id?: string;
-
+  program?: string;
 
   @IsOptional()
   @IsString()

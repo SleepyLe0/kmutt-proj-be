@@ -16,9 +16,9 @@ class FormService extends MainService {
     search_option,
     status,
     admission_id,
-    faculty_id,
-    department_id,
-    program_id,
+    faculty,
+    department,
+    program,
     submitter_name,
     submitter_email,
     date_start,
@@ -41,16 +41,17 @@ class FormService extends MainService {
       if (admission_id) {
         filterQuery.admission_id = admission_id;
       }
-      if (faculty_id) {
-        filterQuery.faculty_id = faculty_id;
-      }
-      if (department_id) {
-        filterQuery.department_id = department_id;
-      }
 
+      if (faculty) {
+        filterQuery.faculty = { $regex: faculty, $options: 'i' };
+      }
+      if (department) {
+        filterQuery.department_id = { $regex: department, $options: 'i' };
+      }
+      
       // Program filter (search within intake_programs array)
-      if (program_id) {
-        filterQuery['intake_programs.program_id'] = program_id;
+      if (program) {
+        filterQuery['intake_programs.program_id'] = { $regex: program, $options: 'i' };
       }
 
       // Submitter filters
@@ -148,9 +149,9 @@ class FormService extends MainService {
     search_option,
     status,
     admission_id,
-    faculty_id,
-    department_id,
-    program_id,
+    faculty,
+    department,
+    program,
     submitter_name,
     submitter_email,
     date_start,
@@ -176,16 +177,17 @@ class FormService extends MainService {
       if (admission_id) {
         filterQuery.admission_id = admission_id;
       }
-      if (faculty_id) {
-        filterQuery.faculty_id = faculty_id;
+      
+      if (faculty) {
+        filterQuery.faculty = { $regex: faculty, $options: 'i' };
       }
-      if (department_id) {
-        filterQuery.department_id = department_id;
+      if (department) {
+        filterQuery.department_id = { $regex: department, $options: 'i' };
       }
-
+      
       // Program filter (search within intake_programs array)
-      if (program_id) {
-        filterQuery['intake_programs.program_id'] = program_id;
+      if (program) {
+        filterQuery['intake_programs.program_id'] = { $regex: program, $options: 'i' };
       }
 
       // Submitter filters
