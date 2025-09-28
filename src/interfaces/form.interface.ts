@@ -9,11 +9,11 @@ export interface Form {
   intake_programs: {
     program_id: string | mongoose.ObjectId;
     intake_degree: {
-      master: {
+      master?: {
         amount: number;
         bachelor_req?: boolean;
       };
-      doctoral: {
+      doctoral?: {
         amount: number;
         bachelor_req?: boolean;
         master_req?: boolean;
