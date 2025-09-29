@@ -166,7 +166,7 @@ class FormService extends MainService {
       const skip = (page - 1) * limit;
       
       // Build filter query
-      const filterQuery: any = { userId: userId };
+      const filterQuery: any = { user_id: userId };
 
       // Status filter
       if (status) {
