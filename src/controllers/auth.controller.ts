@@ -16,9 +16,8 @@ export default class AuthController {
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
       secure: NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000,
-      path: '/auth/refresh'
     });
 
     return res.json({
@@ -54,7 +53,7 @@ export default class AuthController {
 
   @Post("/logout")
   public async logout(@Res() res: Response) {
-    res.clearCookie('refresh_token', { path: '/auth/refresh' });
+    res.clearCookie("refresh_token", { httpOnly: true, secure: true, sameSite: "strict" });
     return res.json({
       status: true,
       message: "Logged out successful",
