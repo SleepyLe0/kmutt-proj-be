@@ -72,7 +72,7 @@ const formSchema: Schema = new Schema({
   intake_programs: { type: [intakeProgramSchema], required: true },
   submitter: {
     name: { type: String, required: true },
-    phone: { type: String, required: true },
+    phone: { type: [String], required: true },
     email: { type: String, required: true },
   },
   status: {

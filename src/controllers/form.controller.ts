@@ -139,8 +139,9 @@ export default class FormController {
   }
 
   @Delete('/:id')
-  public async deleteForm(@Param('id') id: string, @Res() res: Response) {
-    const result = await this.formService.delete(id);
+  public async deleteForm(@Param('id') id: string, @Req() req: RequestWithUser, @Res() res: Response) {
+    const userId = req.user._id.toString();
+    const result = await this.formService.delete(id, userId);
     return res.json({
       status: true,
       message: result

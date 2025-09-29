@@ -81,8 +81,8 @@ export class SubmitterDto {
   name: string;
 
   @IsNotEmpty()
-  @IsString()
-  phone: string;
+  @IsArray()
+  phone: string[];
 
   @IsNotEmpty()
   @IsEmail()

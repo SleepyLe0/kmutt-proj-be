@@ -46,7 +46,7 @@ export const createFormResponse = {
   ],
   "submitter": {
     "name": "ดร.สมชาย ใจดี",
-    "phone": "081-234-5678",
+    "phone": ["081-234-5678"],
     "email": "somchai.jaidee@kmutt.ac.th"
   },
   "status": "received"
@@ -87,7 +87,7 @@ export const updateFormResponse = {
   ],
   "submitter": {
     "name": "ดร.สมชาย ใจดี",
-    "phone": "081-234-5679",
+    "phone": ["081-234-5679"],
     "email": "somchai.jaidee@kmutt.ac.th"
   },
   "status": "verified"

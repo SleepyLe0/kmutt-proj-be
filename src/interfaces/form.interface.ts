@@ -32,7 +32,7 @@ export interface Form {
   }[];
   submitter: {
     name: string;
-    phone: string;
+    phone: string[];
     email: string;
   };
   status: 'received' | 'verified';

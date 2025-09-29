@@ -405,8 +405,20 @@ class FormService extends MainService {
     }
   }
 
-  public async delete(id: string): Promise<boolean> {
+  public async delete(id: string, userId: string): Promise<boolean> {
     try {
+      // Check if form exists
+      const existingForm = await this.model.form.findById(id);
+      if (!existingForm) {
+        throw new HttpException(404, 'Form not found');
+      }
+
+      // Check update permission
+      const user = await this.model.user.findById(userId);
+      if (user.role !== 'admin' && user._id !== existingForm.user_id) {
+        throw new HttpException(403, 'You do not have permission to update this form')
+      }
+
       const result = await this.model.form.findByIdAndDelete(id);
       return !!result;
     } catch (error) {
