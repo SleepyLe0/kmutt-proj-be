@@ -36,7 +36,7 @@ export default class AuthController {
 
   @Post("/refresh")
   public async refreshToken(@Req() req: Request, @Res() res: Response) {
-    const { accessToken, user } = await this.authService.refreshAccessToken(req.cookies.refreshToken);
+    const { accessToken, user } = await this.authService.refreshAccessToken(req.cookies.refresh_token);
     return res.json({
       status: true,
       message: "Refresh new access token successful",

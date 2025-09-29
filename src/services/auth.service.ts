@@ -2,7 +2,7 @@ import { OAuth2Client } from 'google-auth-library';
 import MainService from './main.service';
 import { User } from '@/interfaces/user.interface';
 import { HttpException } from '@/exceptions/HttpException';
-import { generateJWTAccess, verifyJWTRefresh } from '@/utils/token';
+import { generateJWTAccess, generateJWTRefresh, verifyJWTRefresh } from '@/utils/token';
 import { GoogleProfile } from '@/dtos/auth.dto';
 
 class AuthService extends MainService {
@@ -67,7 +67,7 @@ class AuthService extends MainService {
   public generateTokensForUser(user: User): { accessToken: string, refreshToken: string } {
     try {
       const accessToken = generateJWTAccess(user);
-      const refreshToken = generateJWTAccess(user);
+      const refreshToken = generateJWTRefresh(user);
       return { accessToken, refreshToken };
     } catch (error) {
       console.error(error);
@@ -79,7 +79,7 @@ class AuthService extends MainService {
     try {
       if (!refreshToken) throw new HttpException(400, 'No refresh token');
       const payload = verifyJWTRefresh(refreshToken) as { id: string, email: string };
-      const findUser = await this.model.user.findOne({ id: payload.id, email: payload.email });
+      const findUser = await this.model.user.findOne({ _id: payload.id, email: payload.email });
       if (!findUser) throw new HttpException(404, "User not found");
       const accessToken = generateJWTAccess(findUser);
       return { accessToken, user: findUser }
