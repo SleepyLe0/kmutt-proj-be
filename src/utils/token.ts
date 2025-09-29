@@ -6,7 +6,7 @@ const refreshSecret = process.env.JWT_REFRESH_SECRET!;
 
 export const generateJWTAccess = (user: User): string => {
   const jwtUser = { id: user._id, email: user.email, role: user.role };
-  return jwt.sign(jwtUser, accessSecret, { expiresIn: '15m' });
+  return jwt.sign(jwtUser, accessSecret, { expiresIn: '1d' });
 }
 
 export const generateJWTRefresh = (user: User): string => {
