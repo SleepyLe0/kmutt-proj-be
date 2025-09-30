@@ -397,7 +397,7 @@ class FormService extends MainService {
       // Check update permission
       const user = await this.model.user.findById(userId);
       if (user.role !== 'admin' && user._id !== existingForm.user_id) {
-        throw new HttpException(403, 'You do not have permission to update this form')
+        throw new HttpException(403, 'You do not have permission to delete this form')
       }
 
       const result = await this.model.form.findByIdAndDelete(id);
