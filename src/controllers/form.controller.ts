@@ -71,7 +71,7 @@ export default class FormController {
 
     return res.json({
       status: true,
-      ...(await this.formService.findAllByUser(id, paginationParams)),
+      ...(await this.formService.findAll(id, paginationParams)),
     });
   }
 

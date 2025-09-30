@@ -32,6 +32,7 @@ export default class FormController {
 
   @Get('/')
   public async getAllForms(
+    @Req() req: RequestWithUser,
     @Res() res: Response,
     @QueryParam('limit') limit: number = 20,
     @QueryParam('page') page: number = 1,
@@ -49,6 +50,8 @@ export default class FormController {
     @QueryParam('sort') sort?: number,
     @QueryParam('sort_option') sort_option?: string,
   ) {
+    const id = req.user._id.toString();
+
     const paginationParams: paginationDto = {
       limit,
       page,
@@ -70,7 +73,7 @@ export default class FormController {
 
     return res.json({
       status: true,
-      ...(await this.formService.findAll(paginationParams)),
+      ...(await this.formService.findAll(id, paginationParams)),
     });
   }
 
