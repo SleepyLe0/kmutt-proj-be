@@ -26,11 +26,11 @@ const admissionSchema: Schema = new Schema({
   },
   application_window: {
     open_at: {
-      type: String,
+      type: Date,
       required: true,
     },
     close_at: {
-      type: String,
+      type: Date,
       required: true,
     },
     notice: {
@@ -48,7 +48,7 @@ const admissionSchema: Schema = new Schema({
       required: true,
     },
     interview_date: {
-      type: String,
+      type: Date,
       required: true,
     },
   }],
@@ -58,7 +58,7 @@ const admissionSchema: Schema = new Schema({
       required: true,
     },
     interview_date: {
-      type: String,
+      type: Date,
       required: true,
     },
   }],

@@ -29,20 +29,10 @@ export default class AdmissionController {
   private admissionService = new AdmissionService();
 
   @Get('/')
-  public async getAllAdmissions(
-    @QueryParam('limit') limit: number = 0,
-    @QueryParam('page') page: number = 1,
-    @Res() res: Response
-  ) {
-    const paginationParams: paginationDto = {
-      limit,
-      page,
-      skip: (page - 1) * limit,
-    };
-
+  public async getAllAdmissions(@Res() res: Response) {
     return res.json({
       status: true,
-      ...(await this.admissionService.findAll(paginationParams)),
+      ...(await this.admissionService.findAll()),
     });
   }
 

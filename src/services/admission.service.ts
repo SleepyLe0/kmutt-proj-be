@@ -1,7 +1,5 @@
-import { paginationDto } from '@/dtos/pagination.dto';
 import MainService from './main.service';
 import { Admission } from '@/interfaces/admission.interface';
-import { buildData } from '@/utils/pagination';
 import {
   CreateAdmissionDto,
   UpdateAdmissionDto,
@@ -9,28 +7,11 @@ import {
 import { HttpException } from '@/exceptions/HttpException';
 
 class AdmissionService extends MainService {
-  public async findAll({
-    limit = 20,
-    page = 1,
-  }: paginationDto): Promise<{ info: any; data: Admission[] }> {
+  public async findAll(): Promise<{ _id: string, label: string }[]> {
     try {
-      const skip = (page - 1) * limit;
-      // Get total count for pagination metadata
-      const total = await this.model.admission.countDocuments({});
-
-      // Use database-level pagination
-      const admissions = await this.model.admission
-        .find({})
-        .sort({ 'term.sort_key': -1, 'term.academic_year_th': -1 })
-        .skip(skip)
-        .limit(limit);
-
-      return buildData({
-        results: admissions,
-        skip: page,
-        limit,
-        currentLength: admissions.length,
-        total,
+      const admissions = await this.model.admission.find();
+      return admissions.map((admission: Admission) => {
+        return { _id: admission._id.toString(), label: admission.term.label };
       });
     } catch (error) {
       console.error(error);

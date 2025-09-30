@@ -397,7 +397,7 @@ class FormService extends MainService {
       if (!existingForm) throw new HttpException(404, 'Form not found');
 
       // Check update permission
-      if (user.role !== 'admin' && user._id !== existingForm.user_id) {
+      if (user.role !== 'admin' && user._id.toString() !== existingForm.user_id.toString()) {
         throw new HttpException(403, 'You do not have permission to delete this form')
       }
 
