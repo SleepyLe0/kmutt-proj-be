@@ -70,18 +70,9 @@ export const updateFormResponse = {
         }
       },
       "intake_calendar": {
-        "rounds": [
-          {
-            "no": 1,
-            "interview_date": "2025-04-15T00:00:00.000Z"
-          }
-        ],
-        "monthly": [
-          {
-            "month": "เมษายน",
-            "interview_date": "2025-04-15T00:00:00.000Z"
-          }
-        ]
+        "rounds": [],
+        "monthly": [],
+        "message": "การรับสมัครระดับบัณฑิตศึกษา ภาคการศึกษาที่ 2/2568 (เริ่มการศึกษา มกราคม 2569) - อัปเดต"
       }
     }
   ],

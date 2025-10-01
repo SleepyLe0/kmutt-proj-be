@@ -28,6 +28,7 @@ export interface Form {
         month: string;
         interview_date: string;
       }[];
+      message?: string;
     };
   }[];
   submitter: {

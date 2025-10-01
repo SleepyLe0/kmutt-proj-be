@@ -32,6 +32,7 @@ const intakeCalendarSchema = new Schema(
   {
     rounds: { type: [intakeRoundsSchema], default: [] },
     monthly: { type: [intakeMonthlySchema], default: [] },
+    message: String,
   },
   { _id: false }
 );
@@ -41,7 +42,7 @@ const intakeProgramSchema = new Schema(
     program_id: { type: Schema.Types.ObjectId, ref: 'Program', required: true },
     intake_degree: {
       master: intakeDegreeSchema,
-      doctoral: intakeDegreeSchema, 
+      doctoral: intakeDegreeSchema,
     },
     intake_calendar: { type: intakeCalendarSchema, required: true },
   },

@@ -73,6 +73,10 @@ export class IntakeCalendarDto {
   @ValidateNested({ each: true })
   @Type(() => IntakeMonthlyDto)
   monthly: IntakeMonthlyDto[];
+
+  @IsOptional()
+  @IsString()
+  message?: string;
 }
 
 export class SubmitterDto {
