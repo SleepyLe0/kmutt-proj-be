@@ -47,6 +47,10 @@ const admissionSchema: Schema = new Schema({
       type: Number,
       required: true,
     },
+    title: {
+      type: String,
+      required: true,
+    },
     interview_date: {
       type: Date,
       required: true,
@@ -54,6 +58,10 @@ const admissionSchema: Schema = new Schema({
   }],
   monthly: [{
     month: {
+      type: String,
+      required: true,
+    },
+    title: {
       type: String,
       required: true,
     },

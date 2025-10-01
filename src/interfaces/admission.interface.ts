@@ -17,10 +17,12 @@ export interface Admission {
   };
   rounds: {
     no: number;
+    title: string;
     interview_date: string;
   }[];
   monthly: {
-    month: string;
+    month: string;  
+    title: string;
     interview_date: string;
   }[];
   created_at: string;

@@ -51,6 +51,10 @@ export class RoundDto {
   no: number;
 
   @IsNotEmpty()
+  @IsString()
+  title: string;
+
+  @IsNotEmpty()
   @IsDateString()
   interview_date: string;
 }
@@ -59,6 +63,10 @@ export class MonthlyDto {
   @IsNotEmpty()
   @IsString()
   month: string;
+
+  @IsNotEmpty()
+  @IsString()
+  title: string;
 
   @IsNotEmpty()
   @IsDateString()

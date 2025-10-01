@@ -12,8 +12,8 @@ const intakeDegreeSchema = new Schema(
 
 const intakeRoundsSchema = new Schema(
   {
-    active: { type: Boolean, default: true },
-    no: { type: Number, required: true, min: 1 },
+    no: { type: Number, required: true },
+    title: { type: String, required: true },
     interview_date: { type: String, required: true },
   },
   { _id: false }
@@ -21,8 +21,8 @@ const intakeRoundsSchema = new Schema(
 
 const intakeMonthlySchema = new Schema(
   {
-    active: { type: Boolean, default: true },
     month: { type: String, required: true },
+    title: { type: String, required: true },
     interview_date: { type: String, required: true },
   },
   { _id: false }

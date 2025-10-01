@@ -10,6 +10,7 @@ import {
   IsMongoId,
   IsIn,
   Min,
+  IsDateString,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -43,11 +44,14 @@ export class IntakeDegreeStructureDto {
 export class IntakeRoundDto {
   @IsNotEmpty()
   @IsNumber()
-  @Min(1)
   no: number;
 
   @IsNotEmpty()
-  @IsString()
+  @IsString() 
+  title: string;
+
+  @IsNotEmpty()
+  @IsDateString()
   interview_date: string;
 }
 
@@ -58,6 +62,10 @@ export class IntakeMonthlyDto {
 
   @IsNotEmpty()
   @IsString()
+  title: string;
+
+  @IsNotEmpty()
+  @IsDateString()
   interview_date: string;
 }
 

@@ -22,10 +22,12 @@ export interface Form {
     intake_calendar: {
       rounds: {
         no: number;
+        title: string;
         interview_date: string;
       }[];
       monthly: {
         month: string;
+        title: string;
         interview_date: string;
       }[];
       message?: string;

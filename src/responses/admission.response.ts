@@ -14,40 +14,49 @@ export const createAdmissionResponse = {
   "rounds": [
     {
         "no": 1,
+        "title": "รอบที่ 1",
         "interview_date": "2025-03-21T00:00:00.000Z"
     },
     {
         "no": 2,
+        "title": "รอบที่ 2",
         "interview_date": "2025-07-04T00:00:00.000Z"
     }
   ],
   "monthly": [
     {
         "month": "มกราคม",
+        "title": "รอบที่ 1",
         "interview_date": "2025-01-20T00:00:00.000Z"
     },
     {
         "month": "กุมภาพันธ์",
+        "title": "รอบที่ 2",
         "interview_date": "2025-02-21T00:00:00.000Z"
     },
     {
         "month": "มีนาคม",
+        "title": "รอบที่ 3",
         "interview_date": "2025-03-21T00:00:00.000Z"
     },
     {
         "month": "เมษายน",
+        "title": "รอบที่ 4",
         "interview_date": "2025-04-21T00:00:00.000Z"
     },
     {
         "month": "พฤษภาคม",
+        "title": "รอบที่ 5",
         "interview_date": "2025-05-19T00:00:00.000Z"
     },
     {
         "month": "มิถุนายน",
+        "title": "รอบที่ 6",
         "interview_date": "2025-06-20T00:00:00.000Z"
     },
     {
         "month": "กรกฎาคม",
+        "title": "รอบที่ 7",
         "interview_date": "2025-07-04T00:00:00.000Z"
     }
   ]
@@ -63,16 +72,19 @@ export const updateAdmissionResponse = {
   "rounds": [
     {
         "no": 1,
+        "title": "รอบที่ 1",
         "interview_date": "2025-11-15T00:00:00.000Z"
     }
-  ],
+  ],  
   "monthly": [
     {
         "month": "พฤศจิกายน",
+        "title": "รอบที่ 1",
         "interview_date": "2025-11-15T00:00:00.000Z"
     },
     {
         "month": "ธันวาคม",
+        "title": "รอบที่ 2",
         "interview_date": "2025-12-15T00:00:00.000Z"
     }
   ]
