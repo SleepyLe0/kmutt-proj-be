@@ -151,4 +151,14 @@ export default class FormController {
         : 'Form not found',
     });
   }
+
+  @Delete('/:admissionId')
+  public async deleteFormByAdmissionId(@Param('admissionId') admissionId: string, @Req() req: RequestWithUser, @Res() res: Response) {
+    const userId = req.user._id.toString();
+    const result = await this.formService.deleteByAdmissionId(admissionId, userId);
+    return res.json({
+      status: true,
+      message: result ? 'Forms deleted successfully' : 'No forms found',
+    });
+  }
 }
