@@ -16,7 +16,7 @@ export default class AuthController {
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
       secure: NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
