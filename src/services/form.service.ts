@@ -320,7 +320,7 @@ class FormService extends MainService {
         updated_at: new Date(),
       });
 
-      return await this.findById(createForm._id.toString());
+      return createForm;
     } catch (error) {
       console.error(error);
       throw error;
@@ -378,8 +378,7 @@ class FormService extends MainService {
         },
         { new: true }
       );
-
-      return await this.findById(updatedForm._id.toString());
+      return updatedForm;
     } catch (error) {
       console.error(error);
       throw error;

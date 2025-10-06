@@ -98,7 +98,7 @@ class DepartmentService extends MainService {
         updated_at: new Date(),
       });
 
-      return await this.findById(createDepartment._id.toString());
+      return createDepartment;
     } catch (error) {
       console.error(error);
       throw error;
@@ -128,7 +128,7 @@ class DepartmentService extends MainService {
         },
         { new: true }
       );
-      return await this.findById(updatedDepartment._id.toString());
+      return updatedDepartment;
     } catch (error) {
       console.error(error);
       throw error;
