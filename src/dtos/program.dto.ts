@@ -31,6 +31,10 @@ export class CreateProgramDto {
   @IsOptional()
   @IsBoolean()
   active?: boolean;
+
+  @IsOptional()
+  @IsIn(['bachelor', 'master'])
+  degree_req?: 'bachelor' | 'master';
 }
 
 export class UpdateProgramDto {
