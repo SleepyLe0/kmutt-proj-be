@@ -20,7 +20,7 @@ function buildLogger() {
       winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
       logFormat
     ),
-    transports: [
+    transports: [ 
       new winstonDaily({
         level: 'debug',
         datePattern: 'YYYY-MM-DD',

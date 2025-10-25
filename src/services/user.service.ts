@@ -6,17 +6,23 @@ import { HttpException } from '@/exceptions/HttpException';
 import { UpdateUserRoleDto } from '@/dtos/user.dto';
 
 class UserService extends MainService {
-  public async findAll({
-    limit = 20,
-    page = 1,
-  }: paginationDto): Promise<{ info: any; data: User[] }> {
+  public async findAll(
+    { limit = 20, page = 1 }: paginationDto,
+    name?: string
+  ): Promise<{ info: any; data: User[] }> {
     try {
       const skip = (page - 1) * limit;
+
+      const filter: any = {};
+      if (name) {
+        filter.name = { $regex: name, $options: 'i' }; // contain + case-insensitive
+      }
+
       // Get total count for pagination metadata
-      const total = await this.model.user.countDocuments({});
+      const total = await this.model.user.countDocuments(filter);
 
       // Use database-level pagination
-      const users = await this.model.user.find({}).skip(skip).limit(limit);
+      const users = await this.model.user.find(filter).skip(skip).limit(limit);
 
       return buildData({
         results: users,
@@ -49,19 +55,27 @@ class UserService extends MainService {
     }
   }
 
-  public async updateRole(id: string, userId: string, updateUserRole: UpdateUserRoleDto): Promise<User> {
+  public async updateRole(
+    id: string,
+    userId: string,
+    updateUserRole: UpdateUserRoleDto
+  ): Promise<User> {
     try {
       const user = await this.model.user.findById(userId);
       if (!user) throw new HttpException(404, 'User not found');
-      if (user.role !== 'admin') throw new HttpException(403, 'You do not have permission to change role');
+      if (user.role !== 'admin')
+        throw new HttpException(
+          403,
+          'You do not have permission to change role'
+        );
       return await this.model.user.findByIdAndUpdate(
-        id, 
+        id,
         {
           role: updateUserRole.role,
           updated_at: new Date(),
         },
         { new: true }
-      )
+      );
     } catch (error) {
       console.error(error);
       throw error;

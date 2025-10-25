@@ -25,9 +25,10 @@ export default class UserController {
 
   @Get('/')
   public async getAllUsers(
+    @Res() res: Response,
     @QueryParam('limit') limit: number = 0,
     @QueryParam('page') page: number = 1,
-    @Res() res: Response
+    @QueryParam('name') name?: string
   ) {
     const paginationParams: paginationDto = {
       limit,
@@ -37,7 +38,7 @@ export default class UserController {
 
     return res.json({
       status: true,
-      ...(await this.userService.findAll(paginationParams)),
+      ...(await this.userService.findAll(paginationParams, name)),
     });
   }
 
@@ -51,8 +52,11 @@ export default class UserController {
   }
 
   @Get('/profile')
-  public async getProfileUser(@Req() req: RequestWithUser, @Res() res: Response) {
-    const id = req.user._id.toString()
+  public async getProfileUser(
+    @Req() req: RequestWithUser,
+    @Res() res: Response
+  ) {
+    const id = req.user._id.toString();
     return res.json({
       status: true,
       data: await this.userService.findById(id),
@@ -61,11 +65,12 @@ export default class UserController {
 
   @Put('/role/:id')
   public async updateUserRole(
-    @Param('id') id: string, 
+    @Param('id') id: string,
     @Body() updateUserRoleDto: UpdateUserRoleDto,
-    @Req() req: RequestWithUser, 
-    @Res() res: Response) {
-    const userId = req.user._id.toString()
+    @Req() req: RequestWithUser,
+    @Res() res: Response
+  ) {
+    const userId = req.user._id.toString();
     return res.json({
       status: true,
       data: await this.userService.updateRole(id, userId, updateUserRoleDto),
