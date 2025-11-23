@@ -3,5 +3,5 @@ package-lock.json
 
 logs/
 
-.env.production.local
-.env.development.local
+.env
+.env*.local
