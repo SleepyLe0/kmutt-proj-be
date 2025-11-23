@@ -1,8 +1,5 @@
 import { paginationDto } from '@/dtos/pagination.dto';
-import {
-  CreateAdmissionDto,
-  UpdateAdmissionDto,
-} from '@/dtos/admission.dto';
+import { CreateAdmissionDto, UpdateAdmissionDto } from '@/dtos/admission.dto';
 import AdmissionService from '@/services/admission.service';
 import { Response } from 'express';
 import {
@@ -17,7 +14,10 @@ import {
   Res,
   UseBefore,
 } from 'routing-controllers';
-import { createAdmissionResponse, updateAdmissionResponse } from '@/responses/admission.response';
+import {
+  createAdmissionResponse,
+  updateAdmissionResponse,
+} from '@/responses/admission.response';
 import { OpenAPI } from 'routing-controllers-openapi';
 import { requireRole } from '@/middlewares/role.middleware';
 import authMiddleware from '@/middlewares/auth.middleware';
@@ -37,10 +37,7 @@ export default class AdmissionController {
   }
 
   @Get('/:id')
-  public async getAdmissionById(
-    @Param('id') id: string,
-    @Res() res: Response
-  ) {
+  public async getAdmissionById(@Param('id') id: string, @Res() res: Response) {
     const admission = await this.admissionService.findById(id);
     return res.json({
       status: true,
@@ -62,10 +59,10 @@ export default class AdmissionController {
       required: true,
       content: {
         'application/json': {
-          example: createAdmissionResponse
-        }
-      }
-    }
+          example: createAdmissionResponse,
+        },
+      },
+    },
   })
   @Post('/')
   public async createAdmission(
@@ -85,10 +82,10 @@ export default class AdmissionController {
       required: true,
       content: {
         'application/json': {
-          example: updateAdmissionResponse
-        }
-      }
-    }
+          example: updateAdmissionResponse,
+        },
+      },
+    },
   })
   @Put('/:id')
   public async updateAdmission(

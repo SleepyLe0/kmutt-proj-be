@@ -2,61 +2,68 @@ import { paginationDto } from '@/dtos/pagination.dto';
 import MainService from './main.service';
 import { Form } from '@/interfaces/form.interface';
 import { buildData } from '@/utils/pagination';
-import {
-  CreateFormDto,
-  UpdateFormDto,
-} from '@/dtos/form.dto';
+import { CreateFormDto, UpdateFormDto } from '@/dtos/form.dto';
 import { HttpException } from '@/exceptions/HttpException';
+import { Types } from 'mongoose';
 
 class FormService extends MainService {
-  public async findAll(userId: string, {
-    limit = 20,
-    page = 1,
-    search,
-    search_option,
-    status,
-    admission_id,
-    faculty,
-    department,
-    program,
-    submitter_name,
-    submitter_email,
-    date_start,
-    date_end,
-    sort,
-    sort_option,
-  }: paginationDto): Promise<{ info: any; data: Form[] }> {
+  public async findAll(
+    userId: string,
+    {
+      limit = 20,
+      page = 1,
+      search,
+      search_option,
+      status,
+      admission_id,
+      faculty,
+      department,
+      program,
+      submitter_name,
+      submitter_email,
+      date_start,
+      date_end,
+      sort,
+      sort_option,
+    }: paginationDto
+  ): Promise<{ info: any; data: Form[] }> {
     try {
       // User validation
       const user = await this.model.user.findById(userId);
       if (!user) throw new HttpException(404, 'User not found');
 
       const skip = (page - 1) * limit;
-  
+
       // Build match stage for filtering
       const matchStage: any = {};
 
       // User permission
       if (user.role === 'user') matchStage.user_id = user._id;
-  
+
       // Status filter
       if (status) {
         matchStage.status = status;
       }
-  
+
       // Admission ID filter
       if (admission_id) {
-        matchStage.admission_id = admission_id;
+        matchStage.admission_id = new Types.ObjectId(admission_id);
       }
-  
+
       // Submitter filters
       if (submitter_name) {
-        matchStage['submitter.name'] = { $regex: submitter_name, $options: 'i' };
+        matchStage['submitter.name'] = {
+          $regex: submitter_name,
+          $options: 'i',
+        };
       }
       if (submitter_email) {
-        matchStage['submitter.email'] = { $regex: submitter_email, $options: 'i' };
+        matchStage['submitter.email'] = {
+          $regex: submitter_email,
+          $options: 'i',
+        };
       }
-  
+
       // Date range filters
       if (date_start || date_end) {
         matchStage.created_at = {};
@@ -67,7 +74,7 @@ class FormService extends MainService {
           matchStage.created_at.$lte = new Date(date_end);
         }
       }
-  
+
       // Search functionality
       if (search) {
         const searchRegex = { $regex: search, $options: 'i' };
@@ -97,12 +104,12 @@ class FormService extends MainService {
           ];
         }
       }
-  
+
       // Build aggregation pipeline
       const pipeline: any[] = [
         // Initial match stage (before lookups for better performance)
         ...(Object.keys(matchStage).length > 0 ? [{ $match: matchStage }] : []),
-  
+
         // Lookup admission
         {
           $lookup: {
@@ -113,7 +120,7 @@ class FormService extends MainService {
           },
         },
         { $unwind: { path: '$admission', preserveNullAndEmptyArrays: true } },
-  
+
         // Lookup faculty
         {
           $lookup: {
@@ -124,7 +131,7 @@ class FormService extends MainService {
           },
         },
         { $unwind: { path: '$faculty', preserveNullAndEmptyArrays: true } },
-  
+
         // Lookup department
         {
           $lookup: {
@@ -135,7 +142,7 @@ class FormService extends MainService {
           },
         },
         { $unwind: { path: '$department', preserveNullAndEmptyArrays: true } },
-  
+
         // Lookup user
         {
           $lookup: {
@@ -146,7 +153,7 @@ class FormService extends MainService {
           },
         },
         { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
-  
+
         // Lookup programs within intake_programs array
         {
           $lookup: {
@@ -156,7 +163,7 @@ class FormService extends MainService {
             as: 'program_details',
           },
         },
-  
+
         // Add populated programs back to intake_programs
         {
           $addFields: {
@@ -174,7 +181,9 @@ class FormService extends MainService {
                             $filter: {
                               input: '$program_details',
                               as: 'prog',
-                              cond: { $eq: ['$$prog._id', '$$intake.program_id'] },
+                              cond: {
+                                $eq: ['$$prog._id', '$$intake.program_id'],
+                              },
                             },
                           },
                           0,
@@ -189,43 +198,45 @@ class FormService extends MainService {
         },
         { $project: { program_details: 0 } },
       ];
-  
+
       // Post-lookup filters (filtering by populated field titles)
       const postMatchStage: any = {};
-  
+
       if (faculty) {
         postMatchStage['faculty.title'] = { $regex: faculty, $options: 'i' };
       }
       if (department) {
-        postMatchStage['department.title'] = { $regex: department, $options: 'i' };
+        postMatchStage['department.title'] = {
+          $regex: department,
+          $options: 'i',
+        };
       }
       if (program) {
-        postMatchStage['intake_programs.program_id.title'] = { $regex: program, $options: 'i' };
+        postMatchStage['intake_programs.program_id.title'] = {
+          $regex: program,
+          $options: 'i',
+        };
       }
-  
+
       if (Object.keys(postMatchStage).length > 0) {
         pipeline.push({ $match: postMatchStage });
       }
-  
+
       // Count total documents (before pagination)
       const countPipeline = [...pipeline, { $count: 'total' }];
       const countResult = await this.model.form.aggregate(countPipeline);
       const total = countResult[0]?.total || 0;
-  
+
       // Build sort options
       let sortStage: any = { created_at: -1 };
       if (sort && sort_option) {
         const sortDirection = sort === 1 ? 1 : -1;
         sortStage = { [sort_option]: sortDirection };
       }
-  
+
       // Add sort, skip, and limit to pipeline
-      pipeline.push(
-        { $sort: sortStage },
-        { $skip: skip },
-        { $limit: limit }
-      );
-  
+      pipeline.push({ $sort: sortStage }, { $skip: skip }, { $limit: limit });
+
       // Project to match the original populate structure
       pipeline.push({
         $project: {
@@ -238,14 +249,18 @@ class FormService extends MainService {
           admission_id: { _id: '$admission._id', term: '$admission.term' },
           faculty_id: { _id: '$faculty._id', title: '$faculty.title' },
           department_id: { _id: '$department._id', title: '$department.title' },
-          user_id: { _id: '$user._id', name: '$user.name', email: '$user.email' },
+          user_id: {
+            _id: '$user._id',
+            name: '$user.name',
+            email: '$user.email',
+          },
           intake_programs: 1,
         },
       });
-  
+
       // Execute aggregation
       const forms = await this.model.form.aggregate(pipeline);
-  
+
       return buildData({
         results: forms,
         skip: page,
@@ -274,7 +289,10 @@ class FormService extends MainService {
     }
   }
 
-  public async create(userId: string, createFormDto: CreateFormDto): Promise<Form> {
+  public async create(
+    userId: string,
+    createFormDto: CreateFormDto
+  ): Promise<Form> {
     try {
       // Check if user exists
       const userExists = await this.model.user.findById(userId);
@@ -308,7 +326,9 @@ class FormService extends MainService {
 
       // Validate all program ids and check duplicates within same admission/user
       const programIds = createFormDto.intake_programs.map(p => p.program_id);
-      const programs = await this.model.program.find({ _id: { $in: programIds } });
+      const programs = await this.model.program.find({
+        _id: { $in: programIds },
+      });
       if (programs.length !== programIds.length) {
         throw new HttpException(404, 'One or more programs not found');
       }
@@ -327,7 +347,11 @@ class FormService extends MainService {
     }
   }
 
-  public async update(id: string, userId: string, updateFormDto: UpdateFormDto): Promise<Form> {
+  public async update(
+    id: string,
+    userId: string,
+    updateFormDto: UpdateFormDto
+  ): Promise<Form> {
     try {
       // Check if form exists
       const existingForm = await this.model.form.findById(id);
@@ -338,7 +362,10 @@ class FormService extends MainService {
       // Check update permission
       const user = await this.model.user.findById(userId);
       if (user.role !== 'admin' && user._id !== existingForm.user_id) {
-        throw new HttpException(403, 'You do not have permission to update this form')
+        throw new HttpException(
+          403,
+          'You do not have permission to update this form'
+        );
       }
 
       // Check if faculty exists if faculty_id is being updated
@@ -364,7 +391,9 @@ class FormService extends MainService {
       // Validate programs if intake_programs is being updated
       if (updateFormDto.intake_programs) {
         const programIds = updateFormDto.intake_programs.map(p => p.program_id);
-        const programs = await this.model.program.find({ _id: { $in: programIds } });
+        const programs = await this.model.program.find({
+          _id: { $in: programIds },
+        });
         if (programs.length !== programIds.length) {
           throw new HttpException(404, 'One or more programs not found');
         }
@@ -396,8 +425,14 @@ class FormService extends MainService {
       if (!existingForm) throw new HttpException(404, 'Form not found');
 
       // Check delete permission
-      if (user.role !== 'admin' && user._id.toString() !== existingForm.user_id.toString()) {
-        throw new HttpException(403, 'You do not have permission to delete this form')
+      if (
+        user.role !== 'admin' &&
+        user._id.toString() !== existingForm.user_id.toString()
+      ) {
+        throw new HttpException(
+          403,
+          'You do not have permission to delete this form'
+        );
       }
 
       const result = await this.model.form.findByIdAndDelete(id);
@@ -408,20 +443,29 @@ class FormService extends MainService {
     }
   }
 
-  public async deleteByAdmissionId(admissionId: string, userId: string): Promise<boolean> {
+  public async deleteByAdmissionId(
+    admissionId: string,
+    userId: string
+  ): Promise<boolean> {
     try {
       // User validation
       const user = await this.model.user.findById(userId);
       if (!user) throw new HttpException(404, 'User not found');
 
       // Check delete permission
-      if (user.role !== 'admin') throw new HttpException(403, 'You do not have permission to delete forms');
+      if (user.role !== 'admin')
+        throw new HttpException(
+          403,
+          'You do not have permission to delete forms'
+        );
 
       // Admission validation
       const admission = await this.model.admission.findById(admissionId);
       if (!admission) throw new HttpException(404, 'Admission not found');
 
-      const result = await this.model.form.deleteMany({ admission_id: admissionId });
+      const result = await this.model.form.deleteMany({
+        admission_id: admissionId,
+      });
       return !!result;
     } catch (error) {
       console.error(error);
