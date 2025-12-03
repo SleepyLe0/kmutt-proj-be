@@ -20,6 +20,10 @@ export class CreateProgramDto {
   @IsString()
   title: string;
 
+  @IsOptional()
+  @IsString()
+  time?: string;
+
   @IsNotEmpty()
   @IsIn(['master', 'doctoral'])
   degree_level: 'master' | 'doctoral';
@@ -49,6 +53,10 @@ export class UpdateProgramDto {
   @IsOptional()
   @IsString()
   title?: string;
+
+  @IsOptional()
+  @IsString()
+  time?: string;
 
   @IsOptional()
   @IsIn(['master', 'doctoral'])

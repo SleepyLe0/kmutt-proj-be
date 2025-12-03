@@ -1,4 +1,5 @@
 import { Program } from '@/interfaces/program.interface';
+import { time } from 'console';
 import { Document, model, Schema } from 'mongoose';
 
 const programSchema: Schema = new Schema({
@@ -14,6 +15,9 @@ const programSchema: Schema = new Schema({
   title: {
     type: String,
     required: true,
+  },
+  time: {
+    type: String,
   },
   degree_level: {
     type: String,

@@ -14,7 +14,10 @@ import {
   Res,
   UseBefore,
 } from 'routing-controllers';
-import { createProgramResponse, updateProgramResponse } from '@/responses/program.response';
+import {
+  createProgramResponse,
+  updateProgramResponse,
+} from '@/responses/program.response';
 import { OpenAPI } from 'routing-controllers-openapi';
 import authMiddleware from '@/middlewares/auth.middleware';
 import { requireRole } from '@/middlewares/role.middleware';
@@ -69,7 +72,8 @@ export default class ProgramController {
     @Param('departmentId') departmentId: string,
     @Res() res: Response
   ) {
-    const programs = await this.programService.findByDepartmentId(departmentId);
+    const programs =
+      await this.programService.findByDepartmentIdAdmin(departmentId);
     return res.json({
       status: true,
       data: programs,
@@ -81,10 +85,10 @@ export default class ProgramController {
       required: true,
       content: {
         'application/json': {
-          example: createProgramResponse
-        }
-      }
-    }
+          example: createProgramResponse,
+        },
+      },
+    },
   })
   @Post('/')
   public async createProgram(
@@ -104,10 +108,10 @@ export default class ProgramController {
       required: true,
       content: {
         'application/json': {
-          example: updateProgramResponse
-        }
-      }
-    }
+          example: updateProgramResponse,
+        },
+      },
+    },
   })
   @Put('/:id')
   public async updateProgram(
@@ -129,6 +133,21 @@ export default class ProgramController {
     return res.json({
       status: true,
       message: result ? 'Program deleted successfully' : 'Program not found',
+    });
+  }
+
+  @Put('/:id/toggle-active')
+  public async toggleProgramActive(
+    @Param('id') id: string,
+    @Res() res: Response
+  ) {
+    const program = await this.programService.toggleActive(id);
+    return res.json({
+      status: true,
+      message: program.active
+        ? 'Program activated successfully'
+        : 'Program deactivated successfully',
+      data: program,
     });
   }
 }

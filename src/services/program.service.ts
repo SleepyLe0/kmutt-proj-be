@@ -63,6 +63,21 @@ class ProgramService extends MainService {
   public async findByDepartmentId(departmentId: string): Promise<Program[]> {
     try {
       return await this.model.program
+        .find({
+          department_id: departmentId,
+          active: true, // ✅ เพิ่มเงื่อนไขเฉพาะ active = true
+        })
+        .populate('faculty_id', 'title')
+        .populate('department_id', 'title');
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  public async findByDepartmentIdAdmin(departmentId: string): Promise<Program[]> {
+    try {
+      return await this.model.program
         .find({ department_id: departmentId })
         .populate('faculty_id', 'title')
         .populate('department_id', 'title');
@@ -124,12 +139,22 @@ class ProgramService extends MainService {
         faculty_id: createProgramDto.faculty_id,
       });
 
-      if (checkExistProgram) throw new HttpException(409, 'Program with this title already exists in this department and faculty');
+      if (checkExistProgram)
+        throw new HttpException(
+          409,
+          'Program with this title already exists in this department and faculty'
+        );
 
-      if (createProgramDto.degree_level === 'doctoral' && !createProgramDto.degree_req) {
-        throw new HttpException(400, 'Degree requirement is required for doctoral degree');
+      if (
+        createProgramDto.degree_level === 'doctoral' &&
+        !createProgramDto.degree_req
+      ) {
+        throw new HttpException(
+          400,
+          'Degree requirement is required for doctoral degree'
+        );
       }
-      
+
       const createProgram = await this.model.program.create({
         ...createProgramDto,
         created_at: new Date(),
@@ -168,8 +193,15 @@ class ProgramService extends MainService {
         }
       }
 
-      if (updateProgramDto.degree_level && updateProgramDto.degree_level === 'doctoral' && !updateProgramDto.degree_req) {
-        throw new HttpException(400, 'Degree requirement is required for doctoral degree');
+      if (
+        updateProgramDto.degree_level &&
+        updateProgramDto.degree_level === 'doctoral' &&
+        !updateProgramDto.degree_req
+      ) {
+        throw new HttpException(
+          400,
+          'Degree requirement is required for doctoral degree'
+        );
       }
 
       const checkExistProgram = await this.model.program.findOne({
@@ -178,7 +210,11 @@ class ProgramService extends MainService {
         faculty_id: updateProgramDto.faculty_id,
       });
 
-      if (checkExistProgram) throw new HttpException(409, 'Program with this title already exists in this department and faculty');
+      if (checkExistProgram)
+        throw new HttpException(
+          409,
+          'Program with this title already exists in this department and faculty'
+        );
 
       const updatedProgram = await this.model.program.findByIdAndUpdate(
         id,
@@ -203,6 +239,19 @@ class ProgramService extends MainService {
       console.error(error);
       throw error;
     }
+  }
+
+  // Toggle active status of a program
+  public async toggleActive(id: string): Promise<Program> {
+    const program = await this.model.program.findById(id);
+    if (!program) {
+      throw new Error('Program not found');
+    }
+
+    program.active = !program.active;
+    await program.save();
+
+    return program;
   }
 }
 
