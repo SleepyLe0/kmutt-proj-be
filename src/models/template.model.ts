@@ -16,11 +16,11 @@ const templateSchema: Schema = new Schema({
       required: true,
     },
     label_on_web_th: {
-      title: {
+      label: {
         type: String,
         required: true,
       },
-      subtitle: {
+      description: {
         type: String,
         required: false,
       },
@@ -33,13 +33,19 @@ const templateSchema: Schema = new Schema({
       type: String,
       required: true,
     },
-    start_date: {
-      type: String,
-      required: true,
-    },
-    end_date: {
-      type: String,
-      required: true,
+    date: {
+      start_date: {
+        type: String,
+        required: true,
+      },
+      end_date: {
+        type: String,
+        required: true,
+      },
+      description: {
+        type: String,
+        required: false,
+      },
     },
     current_stage: {
       type: String,

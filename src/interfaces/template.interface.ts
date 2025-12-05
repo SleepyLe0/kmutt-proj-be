@@ -5,13 +5,16 @@ export interface Template {
     no: number;
     sequence: number;
     label_on_web_th: {
-      title: string;
-      subtitle?: string;
+      label: string;
+      description?: string;
     };
     label_on_web_en: string;
     application_form_status: string;
-    start_date: string;
-    end_date: string;
+    date: {
+      start_date: string;
+      end_date: string;
+      description?: string;
+    };
     current_stage: 'Yes' | 'No';
     export: boolean;
   }[];

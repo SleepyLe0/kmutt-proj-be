@@ -13,11 +13,25 @@ import { Type } from 'class-transformer';
 export class LabelOnWebThDto {
   @IsNotEmpty()
   @IsString()
-  title: string;
+  label: string;
 
   @IsOptional()
   @IsString()
-  subtitle?: string;
+  description?: string;
+}
+
+export class DateDto {
+  @IsNotEmpty()
+  @IsString()
+  start_date: string;
+
+  @IsNotEmpty()
+  @IsString()
+  end_date: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
 }
 
 export class ContentDto {
@@ -43,12 +57,9 @@ export class ContentDto {
   application_form_status: string;
 
   @IsNotEmpty()
-  @IsString()
-  start_date: string;
-
-  @IsNotEmpty()
-  @IsString()
-  end_date: string;
+  @ValidateNested()
+  @Type(() => DateDto)
+  date: DateDto;
 
   @IsNotEmpty()
   @IsEnum(['Yes', 'No'])
