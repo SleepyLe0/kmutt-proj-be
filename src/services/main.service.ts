@@ -4,6 +4,7 @@ import DepartmentModel from '@/models/department.model';
 import ProgramModel from '@/models/program.model';
 import AdmissionModel from '@/models/admission.model';
 import FormModel from '@/models/form.model';
+import TemplateModel from '@/models/template.model';
 
 export interface IModels {
   user: typeof UserModel;
@@ -12,6 +13,7 @@ export interface IModels {
   program: typeof ProgramModel;
   admission: typeof AdmissionModel;
   form: typeof FormModel;
+  template: typeof TemplateModel;
 }
 
 export default class MainService {
@@ -25,6 +27,7 @@ export default class MainService {
       program: ProgramModel,
       admission: AdmissionModel,
       form: FormModel,
+      template: TemplateModel,
     };
   }
 }
