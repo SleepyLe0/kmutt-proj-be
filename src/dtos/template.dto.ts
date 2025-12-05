@@ -6,7 +6,7 @@ import {
   IsArray,
   ValidateNested,
   IsBoolean,
-  IsEnum,
+  IsIn,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -62,7 +62,7 @@ export class ContentDto {
   date: DateDto;
 
   @IsNotEmpty()
-  @IsEnum(['Yes', 'No'])
+  @IsIn(['Yes', 'No'])
   current_stage: 'Yes' | 'No';
 
   @IsNotEmpty()

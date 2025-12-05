@@ -38,7 +38,7 @@ export default class TemplateController {
       data: template,
     });
   }
-
+  
   @Post('/')
   public async createTemplate(
     @Body() createTemplateDto: CreateTemplateDto,
