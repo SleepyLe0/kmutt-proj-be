@@ -14,6 +14,8 @@ import {
 } from 'routing-controllers';
 import { requireRole } from '@/middlewares/role.middleware';
 import authMiddleware from '@/middlewares/auth.middleware';
+import { OpenAPI } from 'routing-controllers-openapi';
+import { createTemplateResponse, updateTemplateResponse } from '@/responses/template.response';
 
 @JsonController('/admin/template')
 @UseBefore(requireRole('admin'))
@@ -39,6 +41,16 @@ export default class TemplateController {
     });
   }
   
+  @OpenAPI({
+    requestBody: {
+      required: true,
+      content: {
+        'application/json': {
+          example: createTemplateResponse
+        }
+      }
+    }
+  })
   @Post('/')
   public async createTemplate(
     @Body() createTemplateDto: CreateTemplateDto,
@@ -52,6 +64,16 @@ export default class TemplateController {
     });
   }
 
+  @OpenAPI({
+    requestBody: {
+      required: true,
+      content: {
+        'application/json': {
+          example: updateTemplateResponse
+        }
+      }
+    }
+  })
   @Put('/:id')
   public async updateTemplate(
     @Param('id') id: string,
