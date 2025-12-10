@@ -44,12 +44,6 @@ class ConvertService extends MainService {
     let tempOutputDir: string | null = null;
 
     try {
-      console.log('Converting file:', {
-        originalFilename,
-        bufferLength: fileBuffer?.length,
-        isBuffer: Buffer.isBuffer(fileBuffer)
-      });
-
       // Validate file extension
       const fileExtension = originalFilename.split('.').pop()?.toLowerCase();
       if (!fileExtension || !['xlsx', 'xls'].includes(fileExtension)) {
@@ -70,25 +64,19 @@ class ConvertService extends MainService {
 
       // Write buffer to temp file
       fs.writeFileSync(tempInputPath, fileBuffer);
-      console.log('Temp file created:', tempInputPath);
 
       // Get LibreOffice path
       const sofficePath = getLibreOfficePath();
-      console.log('Using LibreOffice at:', sofficePath);
 
       // Convert using LibreOffice command line
       // --headless: run without GUI
       // --convert-to pdf: convert to PDF format
       // --outdir: output directory
       const command = `${sofficePath} --headless --convert-to pdf --outdir "${tempOutputDir}" "${tempInputPath}"`;
-      console.log('Executing command:', command);
 
       const { stdout, stderr } = await execAsync(command, {
         timeout: 60000, // 60 second timeout
       });
-
-      console.log('LibreOffice stdout:', stdout);
-      if (stderr) console.log('LibreOffice stderr:', stderr);
 
       // Find the generated PDF file
       const baseFilename = originalFilename.replace(/\.[^/.]+$/, '');
@@ -102,7 +90,6 @@ class ConvertService extends MainService {
 
       // Read the PDF file
       const pdfBuffer = fs.readFileSync(pdfPath);
-      console.log('Conversion completed, PDF size:', pdfBuffer.length);
 
       // Convert buffer to base64 for response
       const base64Pdf = pdfBuffer.toString('base64');
@@ -136,7 +123,6 @@ class ConvertService extends MainService {
           }
           fs.rmdirSync(tempOutputDir);
         }
-        console.log('Temp files cleaned up');
       } catch (cleanupError) {
         console.error('Error cleaning up temp files:', cleanupError);
       }

@@ -112,8 +112,8 @@ class App {
       })
     );
     this.app.use(compression());
-    this.app.use(express.json());
-    this.app.use(express.urlencoded({ extended: true }));
+    // Body parsing is handled by routing-controllers automatically
+    // Do not add express.json() or express.urlencoded() here as it conflicts
     this.app.use(cookieParser());
   }
 

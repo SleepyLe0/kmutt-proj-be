@@ -112,14 +112,6 @@ export default class ConvertController {
   ) {
     const file = req.file;
 
-    console.log('File received:', {
-      exists: !!file,
-      originalname: file?.originalname,
-      mimetype: file?.mimetype,
-      size: file?.size,
-      bufferLength: file?.buffer?.length
-    });
-
     if (!file) {
       throw new HttpException(400, 'No file uploaded. Please provide an Excel file');
     }
