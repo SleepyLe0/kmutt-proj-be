@@ -1,17 +1,18 @@
 import MainService from './main.service';
 import { Admission } from '@/interfaces/admission.interface';
-import {
-  CreateAdmissionDto,
-  UpdateAdmissionDto,
-} from '@/dtos/admission.dto';
+import { CreateAdmissionDto, UpdateAdmissionDto } from '@/dtos/admission.dto';
 import { HttpException } from '@/exceptions/HttpException';
 
 class AdmissionService extends MainService {
-  public async findAll(): Promise<{ _id: string, label: string }[]> {
+  public async findAll(): Promise<{ _id: string; label: string }[]> {
     try {
       const admissions = await this.model.admission.find();
       return admissions.map((admission: Admission) => {
-        return { _id: admission._id.toString(), label: admission.term.label };
+        return {
+          _id: admission._id.toString(),
+          label: admission.term.label,
+          active: admission.active,
+        };
       });
     } catch (error) {
       console.error(error);
@@ -32,7 +33,7 @@ class AdmissionService extends MainService {
     try {
       return await this.model.admission
         .find({ active: true })
-        .sort({ "term.sort_key": -1 })
+        .sort({ 'term.sort_key': -1 })
         .limit(1);
     } catch (error) {
       console.error(error);
@@ -40,7 +41,9 @@ class AdmissionService extends MainService {
     }
   }
 
-  public async create(createAdmissionDto: CreateAdmissionDto): Promise<Admission> {
+  public async create(
+    createAdmissionDto: CreateAdmissionDto
+  ): Promise<Admission> {
     try {
       // Check if admission for this term already exists
       const existingAdmission = await this.model.admission.findOne({
@@ -49,7 +52,8 @@ class AdmissionService extends MainService {
       });
 
       if (existingAdmission) {
-        throw new HttpException(409,
+        throw new HttpException(
+          409,
           'Admission for this semester and academic year already exists'
         );
       }
@@ -61,13 +65,17 @@ class AdmissionService extends MainService {
           semester: term.semester,
           academic_year_th: term.academic_year_th,
           label: term.label ?? `${term.semester}/${term.academic_year_th}`,
-          sort_key: term.sort_key ?? Number(`${term.academic_year_th}.${term.semester}`)
+          sort_key:
+            term.sort_key ??
+            Number(`${term.academic_year_th}.${term.semester}`),
         },
-        active: new Date(application_window.open_at) < new Date() ? true : false,
+        active:
+          new Date(application_window.open_at) < new Date() ? true : false,
         application_window: {
           open_at: new Date(application_window.open_at),
           close_at: new Date(application_window.close_at),
-          notice: application_window.notice ?? 
+          notice:
+            application_window.notice ??
             `การรับสมัครระดับบัณฑิตศึกษา ภาคการศึกษาที่ ${term.semester}/${term.academic_year_th}`,
           calendar_url: application_window.calendar_url,
         },
@@ -84,25 +92,28 @@ class AdmissionService extends MainService {
     }
   }
 
-  public async update(id: string, updateAdmissionDto: UpdateAdmissionDto): Promise<Admission> {
+  public async update(
+    id: string,
+    updateAdmissionDto: UpdateAdmissionDto
+  ): Promise<Admission> {
     try {
       const { application_window, rounds, monthly } = updateAdmissionDto;
       const updatedAdmission = await this.model.admission.findByIdAndUpdate(
         id,
         {
-          ...(application_window && 
-            {
-              application_window: {
-                open_at: new Date(application_window.open_at),
-                close_at: new Date(application_window.close_at),
-                notice: application_window.notice,
-                calendar_url: application_window.calendar_url, 
-              }
-            }
-          ),
-          ...(monthly && { monthly } ),
-          ...(rounds && { rounds } ),
-          ...((application_window || monthly || rounds) && { updated_at: new Date() }),
+          ...(application_window && {
+            application_window: {
+              open_at: new Date(application_window.open_at),
+              close_at: new Date(application_window.close_at),
+              notice: application_window.notice,
+              calendar_url: application_window.calendar_url,
+            },
+          }),
+          ...(monthly && { monthly }),
+          ...(rounds && { rounds }),
+          ...((application_window || monthly || rounds) && {
+            updated_at: new Date(),
+          }),
         },
         { new: true }
       );
@@ -150,7 +161,7 @@ class AdmissionService extends MainService {
       await this.model.admission.updateMany(
         {
           active: true,
-          "application_window.close_at": { $lte: new Date() }
+          'application_window.close_at': { $lte: new Date() },
         },
         { $set: { active: false, updated_at: new Date() } }
       );
