@@ -48,11 +48,11 @@ export class ContentDto {
   @Type(() => LabelOnWebThDto)
   label_on_web_th: LabelOnWebThDto;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   label_on_web_en: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   application_form_status: string;
 
