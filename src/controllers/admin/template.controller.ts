@@ -15,7 +15,10 @@ import {
 import { requireRole } from '@/middlewares/role.middleware';
 import authMiddleware from '@/middlewares/auth.middleware';
 import { OpenAPI } from 'routing-controllers-openapi';
-import { createTemplateResponse, updateTemplateResponse } from '@/responses/template.response';
+import {
+  createTemplateResponse,
+  updateTemplateResponse,
+} from '@/responses/template.response';
 
 @JsonController('/admin/template')
 @UseBefore(requireRole('admin'))
@@ -40,16 +43,16 @@ export default class TemplateController {
       data: template,
     });
   }
-  
+
   @OpenAPI({
     requestBody: {
       required: true,
       content: {
         'application/json': {
-          example: createTemplateResponse
-        }
-      }
-    }
+          example: createTemplateResponse,
+        },
+      },
+    },
   })
   @Post('/')
   public async createTemplate(
@@ -69,10 +72,10 @@ export default class TemplateController {
       required: true,
       content: {
         'application/json': {
-          example: updateTemplateResponse
-        }
-      }
-    }
+          example: updateTemplateResponse,
+        },
+      },
+    },
   })
   @Put('/:id')
   public async updateTemplate(
@@ -93,9 +96,21 @@ export default class TemplateController {
     const result = await this.templateService.delete(id);
     return res.json({
       status: true,
-      message: result
-        ? 'Template deleted successfully'
-        : 'Template not found',
+      message: result ? 'Template deleted successfully' : 'Template not found',
+    });
+  }
+
+  @Post('/:id/dup')
+  public async dupTemplate(
+    @Param('id') id: string,
+    @Body() body: { title?: string },
+    @Res() res: Response
+  ) {
+    const duplicated = await this.templateService.duplicate(id, body?.title);
+    return res.json({
+      status: true,
+      message: 'Template duplicated successfully',
+      data: duplicated,
     });
   }
 }

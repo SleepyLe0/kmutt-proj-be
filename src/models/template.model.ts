@@ -47,6 +47,7 @@ const templateSchema: Schema = new Schema({
           type: String,
           required: false,
         },
+        show_range: { type: Boolean, required: false },
       },
       current_stage: {
         type: String,

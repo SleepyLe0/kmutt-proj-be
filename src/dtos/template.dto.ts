@@ -32,6 +32,10 @@ export class DateDto {
   @IsOptional()
   @IsString()
   description?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  show_range?: boolean;
 }
 
 export class ContentDto {
