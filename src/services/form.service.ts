@@ -282,7 +282,7 @@ class FormService extends MainService {
         .populate('faculty_id', 'title')
         .populate('department_id', 'title')
         .populate('user_id', 'name email')
-        .populate('intake_programs.program_id', 'title');
+        .populate('intake_programs.program_id', 'title time');
     } catch (error) {
       console.error(error);
       throw error;
