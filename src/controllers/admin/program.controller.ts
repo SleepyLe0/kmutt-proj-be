@@ -46,6 +46,25 @@ export default class ProgramController {
     });
   }
 
+  @Get('/active')
+  public async getAllActivePrograms(
+    @QueryParam('faculty_id') faculty_id: string,
+    @QueryParam('department_id') department_id: string,
+    @QueryParam('degree_level') degree_level: 'master' | 'doctoral',
+    @Res() res: Response
+  ) {
+    const programs = await this.programService.findAllActiveForExport({
+      faculty_id,
+      department_id,
+      degree_level,
+    });
+
+    return res.json({
+      status: true,
+      data: programs,
+    });
+  }
+
   @Get('/:id')
   public async getProgramById(@Param('id') id: string, @Res() res: Response) {
     const program = await this.programService.findById(id);

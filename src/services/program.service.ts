@@ -75,7 +75,9 @@ class ProgramService extends MainService {
     }
   }
 
-  public async findByDepartmentIdAdmin(departmentId: string): Promise<Program[]> {
+  public async findByDepartmentIdAdmin(
+    departmentId: string
+  ): Promise<Program[]> {
     try {
       return await this.model.program
         .find({ department_id: departmentId })
@@ -252,6 +254,32 @@ class ProgramService extends MainService {
     await program.save();
 
     return program;
+  }
+
+  public async findAllActiveForExport(opts?: {
+    faculty_id?: string;
+    department_id?: string;
+    degree_level?: 'master' | 'doctoral';
+  }): Promise<Program[]> {
+    try {
+      const filter: any = { active: true };
+
+      if (opts?.faculty_id) filter.faculty_id = opts.faculty_id;
+      if (opts?.department_id) filter.department_id = opts.department_id;
+      if (opts?.degree_level) filter.degree_level = opts.degree_level;
+
+      return await this.model.program
+        .find(filter)
+        .select(
+          'title degree_abbr degree_level time active faculty_id department_id'
+        )
+        .populate('faculty_id', 'title')
+        .populate('department_id', 'title')
+        .lean();
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
 }
 
