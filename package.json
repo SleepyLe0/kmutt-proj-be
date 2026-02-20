@@ -5,7 +5,8 @@
     "dev": "cross-env NODE_ENV=development nodemon",
     "build": "tsc -p tsconfig.json && tsc-alias -p tsconfig.json",
     "start": "node dist/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db": "cloudflared access tcp --hostname db-admission.sleepyleo.com --url localhost:27017"
   },
   "keywords": [],
   "author": "",
