@@ -46,7 +46,7 @@ class App {
 
       this.routingControllersOption = {
         cors: {
-          origin: ORIGIN,
+          origin: ORIGIN === 'true' ? true : ORIGIN,
           credentials: CREDENTIALS,
           allowedHeaders: [
             'X-Requested-With',

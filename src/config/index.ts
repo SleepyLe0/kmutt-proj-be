@@ -5,7 +5,7 @@ config({
 });
 
 export const CREDENTIALS = process.env.CREDENTIALS === 'true';
-export const ORIGIN = process.env.CREDENTIALS === 'true';
+export const ORIGIN = process.env.ORIGIN;
 
 export const {
   SITE,
