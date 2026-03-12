@@ -33,6 +33,10 @@ const programSchema: Schema = new Schema({
     required: false,
     enum: ['bachelor', 'master'],
   },
+  order: {
+    type: Number,
+    default: 0,
+  },
   active: {
     type: Boolean,
     default: true,

@@ -5,6 +5,7 @@ import {
   IsBoolean,
   IsMongoId,
   IsIn,
+  IsNumber,
 } from 'class-validator';
 
 export class CreateProgramDto {
@@ -31,6 +32,10 @@ export class CreateProgramDto {
   @IsNotEmpty()
   @IsString()
   degree_abbr: string;
+  
+  @IsOptional()
+  @IsNumber()
+  order?: number;
 
   @IsOptional()
   @IsBoolean()
@@ -65,6 +70,10 @@ export class UpdateProgramDto {
   @IsOptional()
   @IsString()
   degree_abbr?: string;
+
+  @IsOptional()
+  @IsNumber()
+  order?: number;
 
   @IsOptional()
   @IsBoolean()

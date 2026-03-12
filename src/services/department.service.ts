@@ -89,7 +89,10 @@ class DepartmentService extends MainService {
       });
 
       if (checkExistDepartment) {
-        throw new HttpException(409, 'Department with this title already exists in this faculty');
+        throw new HttpException(
+          409,
+          'Department with this title already exists in this faculty'
+        );
       }
 
       const createDepartment = await this.model.department.create({

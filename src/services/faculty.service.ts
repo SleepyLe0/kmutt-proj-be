@@ -67,7 +67,7 @@ class FacultyService extends MainService {
         created_at: new Date(),
         updated_at: new Date(),
       });
-      
+
       return createFaculty;
     } catch (error) {
       console.error(error);
@@ -75,7 +75,10 @@ class FacultyService extends MainService {
     }
   }
 
-  public async update(id: string, updateFacultyDto: UpdateFacultyDto): Promise<Faculty> {
+  public async update(
+    id: string,
+    updateFacultyDto: UpdateFacultyDto
+  ): Promise<Faculty> {
     try {
       const updatedFaculty = await this.model.faculty.findByIdAndUpdate(
         id,

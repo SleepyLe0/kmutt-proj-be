@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { paginationDto } from '@/dtos/pagination.dto';
 import MainService from './main.service';
 import { Program } from '@/interfaces/program.interface';
@@ -12,16 +13,38 @@ class ProgramService extends MainService {
   }: paginationDto): Promise<{ info: any; data: Program[] }> {
     try {
       const skip = (page - 1) * limit;
-      // Get total count for pagination metadata
       const total = await this.model.program.countDocuments({});
 
-      // Use database-level pagination with faculty and department population
-      const programs = await this.model.program
-        .find({})
-        .populate('faculty_id', 'title')
-        .populate('department_id', 'title')
-        .skip(skip)
-        .limit(limit);
+      const programs = await this.model.program.aggregate([
+        {
+          $addFields: {
+            sortOrder: {
+              $cond: { if: { $eq: ['$order', 0] }, then: 999999, else: '$order' },
+            },
+          },
+        },
+        { $sort: { sortOrder: 1, created_at: -1 } },
+        { $skip: skip },
+        { $limit: limit },
+        {
+          $lookup: {
+            from: 'faculties',
+            localField: 'faculty_id',
+            foreignField: '_id',
+            as: 'faculty_id',
+          },
+        },
+        {
+          $lookup: {
+            from: 'departments',
+            localField: 'department_id',
+            foreignField: '_id',
+            as: 'department_id',
+          },
+        },
+        { $unwind: { path: '$faculty_id', preserveNullAndEmptyArrays: true } },
+        { $unwind: { path: '$department_id', preserveNullAndEmptyArrays: true } },
+      ]);
 
       return buildData({
         results: programs,
@@ -38,10 +61,12 @@ class ProgramService extends MainService {
 
   public async findById(id: string): Promise<Program> {
     try {
-      return await this.model.program
+      const program = await this.model.program
         .findById(id)
         .populate('faculty_id', 'title')
         .populate('department_id', 'title');
+      if (!program) throw new HttpException(404, 'Program not found');
+      return program;
     } catch (error) {
       console.error(error);
       throw error;
@@ -50,10 +75,35 @@ class ProgramService extends MainService {
 
   public async findByFacultyId(facultyId: string): Promise<Program[]> {
     try {
-      return await this.model.program
-        .find({ faculty_id: facultyId })
-        .populate('faculty_id', 'title')
-        .populate('department_id', 'title');
+      return await this.model.program.aggregate([
+        { $match: { faculty_id: new mongoose.Types.ObjectId(facultyId) } },
+        {
+          $addFields: {
+            sortOrder: {
+              $cond: { if: { $eq: ['$order', 0] }, then: 999999, else: '$order' },
+            },
+          },
+        },
+        { $sort: { sortOrder: 1, created_at: -1 } },
+        {
+          $lookup: {
+            from: 'faculties',
+            localField: 'faculty_id',
+            foreignField: '_id',
+            as: 'faculty_id',
+          },
+        },
+        {
+          $lookup: {
+            from: 'departments',
+            localField: 'department_id',
+            foreignField: '_id',
+            as: 'department_id',
+          },
+        },
+        { $unwind: { path: '$faculty_id', preserveNullAndEmptyArrays: true } },
+        { $unwind: { path: '$department_id', preserveNullAndEmptyArrays: true } },
+      ]);
     } catch (error) {
       console.error(error);
       throw error;
@@ -62,13 +112,40 @@ class ProgramService extends MainService {
 
   public async findByDepartmentId(departmentId: string): Promise<Program[]> {
     try {
-      return await this.model.program
-        .find({
-          department_id: departmentId,
-          active: true, // ✅ เพิ่มเงื่อนไขเฉพาะ active = true
-        })
-        .populate('faculty_id', 'title')
-        .populate('department_id', 'title');
+      return await this.model.program.aggregate([
+        {
+          $match: {
+            department_id: new mongoose.Types.ObjectId(departmentId),
+            active: true,
+          },
+        },
+        {
+          $addFields: {
+            sortOrder: {
+              $cond: { if: { $eq: ['$order', 0] }, then: 999999, else: '$order' },
+            },
+          },
+        },
+        { $sort: { sortOrder: 1, created_at: -1 } },
+        {
+          $lookup: {
+            from: 'faculties',
+            localField: 'faculty_id',
+            foreignField: '_id',
+            as: 'faculty_id',
+          },
+        },
+        {
+          $lookup: {
+            from: 'departments',
+            localField: 'department_id',
+            foreignField: '_id',
+            as: 'department_id',
+          },
+        },
+        { $unwind: { path: '$faculty_id', preserveNullAndEmptyArrays: true } },
+        { $unwind: { path: '$department_id', preserveNullAndEmptyArrays: true } },
+      ]);
     } catch (error) {
       console.error(error);
       throw error;
@@ -79,10 +156,35 @@ class ProgramService extends MainService {
     departmentId: string
   ): Promise<Program[]> {
     try {
-      return await this.model.program
-        .find({ department_id: departmentId })
-        .populate('faculty_id', 'title')
-        .populate('department_id', 'title');
+      return await this.model.program.aggregate([
+        { $match: { department_id: new mongoose.Types.ObjectId(departmentId) } },
+        {
+          $addFields: {
+            sortOrder: {
+              $cond: { if: { $eq: ['$order', 0] }, then: 999999, else: '$order' },
+            },
+          },
+        },
+        { $sort: { sortOrder: 1, created_at: -1 } },
+        {
+          $lookup: {
+            from: 'faculties',
+            localField: 'faculty_id',
+            foreignField: '_id',
+            as: 'faculty_id',
+          },
+        },
+        {
+          $lookup: {
+            from: 'departments',
+            localField: 'department_id',
+            foreignField: '_id',
+            as: 'department_id',
+          },
+        },
+        { $unwind: { path: '$faculty_id', preserveNullAndEmptyArrays: true } },
+        { $unwind: { path: '$department_id', preserveNullAndEmptyArrays: true } },
+      ]);
     } catch (error) {
       console.error(error);
       throw error;
@@ -93,10 +195,35 @@ class ProgramService extends MainService {
     degreeLevel: 'master' | 'doctoral'
   ): Promise<Program[]> {
     try {
-      return await this.model.program
-        .find({ degree_level: degreeLevel })
-        .populate('faculty_id', 'title')
-        .populate('department_id', 'title');
+      return await this.model.program.aggregate([
+        { $match: { degree_level: degreeLevel } },
+        {
+          $addFields: {
+            sortOrder: {
+              $cond: { if: { $eq: ['$order', 0] }, then: 999999, else: '$order' },
+            },
+          },
+        },
+        { $sort: { sortOrder: 1, created_at: -1 } },
+        {
+          $lookup: {
+            from: 'faculties',
+            localField: 'faculty_id',
+            foreignField: '_id',
+            as: 'faculty_id',
+          },
+        },
+        {
+          $lookup: {
+            from: 'departments',
+            localField: 'department_id',
+            foreignField: '_id',
+            as: 'department_id',
+          },
+        },
+        { $unwind: { path: '$faculty_id', preserveNullAndEmptyArrays: true } },
+        { $unwind: { path: '$department_id', preserveNullAndEmptyArrays: true } },
+      ]);
     } catch (error) {
       console.error(error);
       throw error;
@@ -105,10 +232,12 @@ class ProgramService extends MainService {
 
   public async findByTitle(title: string): Promise<Program> {
     try {
-      return await this.model.program
+      const program = await this.model.program
         .findOne({ title })
         .populate('faculty_id', 'title')
         .populate('department_id', 'title');
+      if (!program) throw new HttpException(404, 'Program not found');
+      return program;
     } catch (error) {
       console.error(error);
       throw error;
@@ -206,17 +335,24 @@ class ProgramService extends MainService {
         );
       }
 
-      const checkExistProgram = await this.model.program.findOne({
-        title: updateProgramDto.title,
-        department_id: updateProgramDto.department_id,
-        faculty_id: updateProgramDto.faculty_id,
-      });
+      if (
+        updateProgramDto.title ||
+        updateProgramDto.department_id ||
+        updateProgramDto.faculty_id
+      ) {
+        const checkExistProgram = await this.model.program.findOne({
+          _id: { $ne: id },
+          title: updateProgramDto.title || { $exists: true },
+          department_id: updateProgramDto.department_id || { $exists: true },
+          faculty_id: updateProgramDto.faculty_id || { $exists: true },
+        });
 
-      if (checkExistProgram)
-        throw new HttpException(
-          409,
-          'Program with this title already exists in this department and faculty'
-        );
+        if (checkExistProgram)
+          throw new HttpException(
+            409,
+            'Program with this title already exists in this department and faculty'
+          );
+      }
 
       const updatedProgram = await this.model.program.findByIdAndUpdate(
         id,
@@ -226,6 +362,7 @@ class ProgramService extends MainService {
         },
         { new: true }
       );
+      if (!updatedProgram) throw new HttpException(404, 'Program not found');
       return updatedProgram;
     } catch (error) {
       console.error(error);
@@ -264,18 +401,55 @@ class ProgramService extends MainService {
     try {
       const filter: any = { active: true };
 
-      if (opts?.faculty_id) filter.faculty_id = opts.faculty_id;
-      if (opts?.department_id) filter.department_id = opts.department_id;
+      if (opts?.faculty_id) filter.faculty_id = new mongoose.Types.ObjectId(opts.faculty_id);
+      if (opts?.department_id) filter.department_id = new mongoose.Types.ObjectId(opts.department_id);
       if (opts?.degree_level) filter.degree_level = opts.degree_level;
 
-      return await this.model.program
-        .find(filter)
-        .select(
-          'title degree_abbr degree_level time active faculty_id department_id'
-        )
-        .populate('faculty_id', 'title')
-        .populate('department_id', 'title')
-        .lean();
+      const pipeline: any[] = [{ $match: filter }];
+
+      // Add custom sorting: 0 at the bottom, others ascending
+      pipeline.push({
+        $addFields: {
+          sortOrder: {
+            $cond: { if: { $eq: ['$order', 0] }, then: 999999, else: '$order' },
+          },
+        },
+      });
+      pipeline.push({ $sort: { sortOrder: 1, created_at: -1 } });
+
+      pipeline.push({
+        $lookup: {
+          from: 'faculties',
+          localField: 'faculty_id',
+          foreignField: '_id',
+          as: 'faculty_id',
+        },
+      });
+      pipeline.push({
+        $lookup: {
+          from: 'departments',
+          localField: 'department_id',
+          foreignField: '_id',
+          as: 'department_id',
+        },
+      });
+      pipeline.push({ $unwind: { path: '$faculty_id', preserveNullAndEmptyArrays: true } });
+      pipeline.push({ $unwind: { path: '$department_id', preserveNullAndEmptyArrays: true } });
+
+      // Project as per the original find().select()
+      pipeline.push({
+        $project: {
+          title: 1,
+          degree_abbr: 1,
+          degree_level: 1,
+          time: 1,
+          active: 1,
+          faculty_id: 1,
+          department_id: 1,
+        },
+      });
+
+      return await this.model.program.aggregate(pipeline);
     } catch (error) {
       console.error(error);
       throw error;
