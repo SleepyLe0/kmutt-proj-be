@@ -227,11 +227,36 @@ class FormService extends MainService {
       const countResult = await this.model.form.aggregate(countPipeline);
       const total = countResult[0]?.total || 0;
 
+      // Add custom sort fields for department and program order to support 0 at bottom
+      pipeline.push({
+        $addFields: {
+          sortDeptOrder: {
+            $cond: { if: { $eq: ['$department.order', 0] }, then: 999999, else: { $ifNull: ['$department.order', 999999] } }
+          },
+          sortProgOrder: {
+            $let: {
+              vars: {
+                firstProg: { $arrayElemAt: ['$intake_programs.program_id', 0] }
+              },
+              in: {
+                $cond: { if: { $eq: ['$$firstProg.order', 0] }, then: 999999, else: { $ifNull: ['$$firstProg.order', 999999] } }
+              }
+            }
+          }
+        }
+      });
+
       // Build sort options
       let sortStage: any = { created_at: -1 };
       if (sort && sort_option) {
         const sortDirection = sort === 1 ? 1 : -1;
-        sortStage = { [sort_option]: sortDirection };
+        if (sort_option === 'department_order' || sort_option === 'department.order') {
+          sortStage = { sortDeptOrder: sortDirection, sortProgOrder: sortDirection, created_at: -1 };
+        } else if (sort_option === 'program_order' || sort_option === 'program.order') {
+          sortStage = { sortProgOrder: sortDirection, created_at: -1 };
+        } else {
+          sortStage = { [sort_option]: sortDirection };
+        }
       }
 
       // Add sort, skip, and limit to pipeline
@@ -248,7 +273,7 @@ class FormService extends MainService {
           // Add other fields you need
           admission_id: { _id: '$admission._id', term: '$admission.term' },
           faculty_id: { _id: '$faculty._id', title: '$faculty.title' },
-          department_id: { _id: '$department._id', title: '$department.title' },
+          department_id: { _id: '$department._id', title: '$department.title', order: '$department.order' },
           user_id: {
             _id: '$user._id',
             name: '$user.name',
@@ -280,9 +305,9 @@ class FormService extends MainService {
         .findById(id)
         .populate('admission_id', 'term')
         .populate('faculty_id', 'title')
-        .populate('department_id', 'title')
+        .populate('department_id', 'title order')
         .populate('user_id', 'name email')
-        .populate('intake_programs.program_id', 'title time');
+        .populate('intake_programs.program_id', 'title time order');
     } catch (error) {
       console.error(error);
       throw error;

@@ -11,6 +11,10 @@ const departmentSchema: Schema = new Schema({
     type: String,
     required: true,
   },
+  order: {
+    type: Number,
+    default: 0,
+  },
   active: {
     type: Boolean,
     default: true,

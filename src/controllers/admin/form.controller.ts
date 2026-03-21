@@ -47,8 +47,8 @@ export default class FormController {
     @QueryParam('submitter_email') submitter_email?: string,
     @QueryParam('date_start') date_start?: string,
     @QueryParam('date_end') date_end?: string,
-    @QueryParam('sort') sort?: number,
-    @QueryParam('sort_option') sort_option?: string,
+    @QueryParam('sort') sort: number = 1,
+    @QueryParam('sort_option') sort_option: string = 'department.order',
   ) {
     const id = req.user._id.toString();
 

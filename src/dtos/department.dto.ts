@@ -4,20 +4,25 @@ import {
   IsOptional,
   IsBoolean,
   IsMongoId,
+  IsNumber,
 } from 'class-validator';
 
 export class CreateDepartmentDto {
   @IsNotEmpty()
   @IsMongoId()
-  faculty_id: string;
+  faculty_id!: string;
 
   @IsNotEmpty()
   @IsString()
-  title: string;
+  title!: string;
 
   @IsOptional()
   @IsBoolean()
   active?: boolean;
+
+  @IsOptional()
+  @IsNumber()
+  order?: number;
 }
 
 export class UpdateDepartmentDto {
@@ -32,4 +37,8 @@ export class UpdateDepartmentDto {
   @IsOptional()
   @IsBoolean()
   active?: boolean;
+
+  @IsOptional()
+  @IsNumber()
+  order?: number;
 }
