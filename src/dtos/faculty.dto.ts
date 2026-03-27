@@ -1,13 +1,17 @@
-import { IsString, IsNotEmpty, IsOptional, IsBoolean } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsBoolean, IsNumber } from 'class-validator';
 
 export class CreateFacultyDto {
   @IsNotEmpty()
   @IsString()
-  title: string;
+  title!: string;
 
   @IsOptional()
   @IsBoolean()
   active?: boolean;
+
+  @IsOptional()
+  @IsNumber()
+  order?: number;
 }
 
 export class UpdateFacultyDto {
@@ -18,4 +22,8 @@ export class UpdateFacultyDto {
   @IsOptional()
   @IsBoolean()
   active?: boolean;
+
+  @IsOptional()
+  @IsNumber()
+  order?: number;
 }

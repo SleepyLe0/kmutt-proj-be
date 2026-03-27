@@ -15,7 +15,7 @@ class ProgramService extends MainService {
       const skip = (page - 1) * limit;
       const total = await this.model.program.countDocuments({});
 
-      const programs = await this.model.program.aggregate([
+      const pipeline: any[] = [
         {
           $addFields: {
             sortOrder: {
@@ -25,7 +25,13 @@ class ProgramService extends MainService {
         },
         { $sort: { sortOrder: 1, created_at: -1 } },
         { $skip: skip },
-        { $limit: limit },
+      ];
+
+      if (limit > 0) {
+        pipeline.push({ $limit: limit });
+      }
+
+      pipeline.push(
         {
           $lookup: {
             from: 'faculties',
@@ -43,8 +49,10 @@ class ProgramService extends MainService {
           },
         },
         { $unwind: { path: '$faculty_id', preserveNullAndEmptyArrays: true } },
-        { $unwind: { path: '$department_id', preserveNullAndEmptyArrays: true } },
-      ]);
+        { $unwind: { path: '$department_id', preserveNullAndEmptyArrays: true } }
+      );
+
+      const programs = await this.model.program.aggregate(pipeline);
 
       return buildData({
         results: programs,

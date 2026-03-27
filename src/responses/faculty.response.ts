@@ -1,9 +1,11 @@
 export const createFacultyResponse = {
   "title": "คณะวิศวกรรมศาสตร์",
-  "active": true
+  "active": true,
+  "order": 0
 }
 
 export const updateFacultyResponse = {
   "title": "คณะวิศวกรรมศาสตร์และเทคโนโลยี",
-  "active": false
+  "active": false,
+  "order": 1
 }

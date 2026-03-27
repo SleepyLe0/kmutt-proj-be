@@ -48,7 +48,7 @@ export default class FormController {
     @QueryParam('date_start') date_start?: string,
     @QueryParam('date_end') date_end?: string,
     @QueryParam('sort') sort: number = 1,
-    @QueryParam('sort_option') sort_option: string = 'department.order',
+    @QueryParam('sort_option') sort_option: string = 'faculty.order',
   ) {
     const id = req.user._id.toString();
 

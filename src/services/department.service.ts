@@ -20,7 +20,7 @@ class DepartmentService extends MainService {
       const total = await this.model.department.countDocuments({});
 
       // Use database-level pagination with faculty population
-      const departments = await this.model.department.aggregate([
+      const pipeline: any[] = [
         {
           $addFields: {
             sortOrder: {
@@ -30,7 +30,13 @@ class DepartmentService extends MainService {
         },
         { $sort: { sortOrder: 1, created_at: -1 } },
         { $skip: skip },
-        { $limit: limit },
+      ];
+
+      if (limit > 0) {
+        pipeline.push({ $limit: limit });
+      }
+
+      pipeline.push(
         {
           $lookup: {
             from: 'faculties',
@@ -39,8 +45,10 @@ class DepartmentService extends MainService {
             as: 'faculty_id',
           },
         },
-        { $unwind: { path: '$faculty_id', preserveNullAndEmptyArrays: true } },
-      ]);
+        { $unwind: { path: '$faculty_id', preserveNullAndEmptyArrays: true } }
+      );
+
+      const departments = await this.model.department.aggregate(pipeline);
 
       return buildData({
         results: departments,

@@ -15,11 +15,24 @@ class FacultyService extends MainService {
       // Get total count for pagination metadata
       const total = await this.model.faculty.countDocuments({});
 
-      // Use database-level pagination
-      const faculties = await this.model.faculty
-        .find({})
-        .skip(skip)
-        .limit(limit);
+      // Use database-level pagination with custom sorting (0 at the bottom)
+      const pipeline: any[] = [
+        {
+          $addFields: {
+            sortOrder: {
+              $cond: { if: { $eq: ['$order', 0] }, then: 999999, else: '$order' },
+            },
+          },
+        },
+        { $sort: { sortOrder: 1, created_at: -1 } },
+        { $skip: skip },
+      ];
+
+      if (limit > 0) {
+        pipeline.push({ $limit: limit });
+      }
+
+      const faculties = await this.model.faculty.aggregate(pipeline);
 
       return buildData({
         results: faculties,

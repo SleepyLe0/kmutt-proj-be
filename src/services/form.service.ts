@@ -227,9 +227,12 @@ class FormService extends MainService {
       const countResult = await this.model.form.aggregate(countPipeline);
       const total = countResult[0]?.total || 0;
 
-      // Add custom sort fields for department and program order to support 0 at bottom
+      // Add custom sort fields for faculty, department, and program order to support 0 at bottom
       pipeline.push({
         $addFields: {
+          sortFacOrder: {
+            $cond: { if: { $eq: ['$faculty.order', 0] }, then: 999999, else: { $ifNull: ['$faculty.order', 999999] } }
+          },
           sortDeptOrder: {
             $cond: { if: { $eq: ['$department.order', 0] }, then: 999999, else: { $ifNull: ['$department.order', 999999] } }
           },
@@ -247,10 +250,12 @@ class FormService extends MainService {
       });
 
       // Build sort options
-      let sortStage: any = { created_at: -1 };
+      let sortStage: any = { sortFacOrder: 1, sortDeptOrder: 1, sortProgOrder: 1, created_at: -1 };
       if (sort && sort_option) {
         const sortDirection = sort === 1 ? 1 : -1;
-        if (sort_option === 'department_order' || sort_option === 'department.order') {
+        if (sort_option === 'faculty_order' || sort_option === 'faculty.order') {
+          sortStage = { sortFacOrder: sortDirection, sortDeptOrder: sortDirection, sortProgOrder: sortDirection, created_at: -1 };
+        } else if (sort_option === 'department_order' || sort_option === 'department.order') {
           sortStage = { sortDeptOrder: sortDirection, sortProgOrder: sortDirection, created_at: -1 };
         } else if (sort_option === 'program_order' || sort_option === 'program.order') {
           sortStage = { sortProgOrder: sortDirection, created_at: -1 };
@@ -259,8 +264,12 @@ class FormService extends MainService {
         }
       }
 
-      // Add sort, skip, and limit to pipeline
-      pipeline.push({ $sort: sortStage }, { $skip: skip }, { $limit: limit });
+      // Add sort, skip, and limit to pipeline (conditionally handle limit: 0)
+      pipeline.push({ $sort: sortStage }, { $skip: skip });
+      
+      if (limit > 0) {
+        pipeline.push({ $limit: limit });
+      }
 
       // Project to match the original populate structure
       pipeline.push({
@@ -272,7 +281,7 @@ class FormService extends MainService {
           updated_at: 1,
           // Add other fields you need
           admission_id: { _id: '$admission._id', term: '$admission.term' },
-          faculty_id: { _id: '$faculty._id', title: '$faculty.title' },
+          faculty_id: { _id: '$faculty._id', title: '$faculty.title', order: '$faculty.order' },
           department_id: { _id: '$department._id', title: '$department.title', order: '$department.order' },
           user_id: {
             _id: '$user._id',
