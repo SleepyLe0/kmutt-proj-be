@@ -7,22 +7,40 @@ import { UpdateUserRoleDto } from '@/dtos/user.dto';
 
 class UserService extends MainService {
   public async findAll(
-    { limit = 20, page = 1 }: paginationDto,
+    { limit = 20, page = 1, sort = 1, sort_option = 'name' }: paginationDto,
     name?: string
   ): Promise<{ info: any; data: User[] }> {
     try {
       const skip = (page - 1) * limit;
+      const allowedSortFields = [
+        'name',
+        'email',
+        'role',
+        'created_at',
+        'updated_at',
+      ];
+      const sortField = allowedSortFields.includes(sort_option)
+        ? sort_option
+        : 'name';
+      const sortDirection = sort === -1 ? -1 : 1;
 
       const filter: any = {};
       if (name) {
-        filter.name = { $regex: name, $options: 'i' }; // contain + case-insensitive
+        filter.$or = [
+          { name: { $regex: name, $options: 'i' } },
+          { email: { $regex: name, $options: 'i' } },
+        ];
       }
 
       // Get total count for pagination metadata
       const total = await this.model.user.countDocuments(filter);
 
       // Use database-level pagination
-      const users = await this.model.user.find(filter).skip(skip).limit(limit);
+      const users = await this.model.user
+        .find(filter)
+        .sort({ [sortField]: sortDirection as any, _id: 1 })
+        .skip(skip)
+        .limit(limit);
 
       return buildData({
         results: users,
@@ -37,7 +55,7 @@ class UserService extends MainService {
     }
   }
 
-  public async findById(id: string): Promise<User> {
+  public async findById(id: string): Promise<User | null> {
     try {
       return await this.model.user.findById(id);
     } catch (error) {
@@ -46,7 +64,7 @@ class UserService extends MainService {
     }
   }
 
-  public async findByEmail(email: string): Promise<User> {
+  public async findByEmail(email: string): Promise<User | null> {
     try {
       return await this.model.user.findOne({ email });
     } catch (error) {
@@ -59,7 +77,7 @@ class UserService extends MainService {
     id: string,
     userId: string,
     updateUserRole: UpdateUserRoleDto
-  ): Promise<User> {
+  ): Promise<User | null> {
     try {
       const user = await this.model.user.findById(userId);
       if (!user) throw new HttpException(404, 'User not found');

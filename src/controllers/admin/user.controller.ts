@@ -28,12 +28,19 @@ export default class UserController {
     @Res() res: Response,
     @QueryParam('limit') limit: number = 0,
     @QueryParam('page') page: number = 1,
-    @QueryParam('name') name?: string
+    @QueryParam('name') name?: string,
+    @QueryParam('sort') sort: number | string = 1,
+    @QueryParam('sort_option') sort_option: string = 'name'
   ) {
+    const parsedSort =
+      Number(sort) === -1 || String(sort).toLowerCase() === 'desc' ? -1 : 1;
+
     const paginationParams: paginationDto = {
       limit,
       page,
       skip: (page - 1) * limit,
+      sort: parsedSort,
+      sort_option,
     };
 
     return res.json({
