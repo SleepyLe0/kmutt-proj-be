@@ -120,6 +120,21 @@ export default class DepartmentController {
     });
   }
 
+  @Put('/:id/toggle-active')
+  public async toggleDepartmentActive(
+    @Param('id') id: string,
+    @Res() res: Response
+  ) {
+    const department = await this.departmentService.toggleActive(id);
+    return res.json({
+      status: true,
+      message: department.active
+        ? 'Department activated successfully'
+        : 'Department deactivated successfully',
+      data: department,
+    });
+  }
+
   @Delete('/:id')
   public async deleteDepartment(@Param('id') id: string, @Res() res: Response) {
     const result = await this.departmentService.delete(id);

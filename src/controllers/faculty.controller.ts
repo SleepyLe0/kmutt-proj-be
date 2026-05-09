@@ -29,7 +29,7 @@ export default class FacultyController {
 
     return res.json({
       status: true,
-      ...(await this.facultyService.findAll(paginationParams)),
+      ...(await this.facultyService.findAllActive(paginationParams)),
     });
   }
 }

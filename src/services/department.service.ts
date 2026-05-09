@@ -63,6 +63,59 @@ class DepartmentService extends MainService {
     }
   }
 
+  public async findAllActive({
+    limit = 20,
+    page = 1,
+  }: paginationDto): Promise<{ info: any; data: Department[] }> {
+    try {
+      const skip = (page - 1) * limit;
+      const filter = { active: true };
+      const total = await this.model.department.countDocuments(filter);
+
+      const pipeline: any[] = [
+        { $match: filter },
+        {
+          $addFields: {
+            sortOrder: {
+              $cond: { if: { $eq: ['$order', 0] }, then: 999999, else: '$order' },
+            },
+          },
+        },
+        { $sort: { sortOrder: 1, created_at: -1 } },
+        { $skip: skip },
+      ];
+
+      if (limit > 0) {
+        pipeline.push({ $limit: limit });
+      }
+
+      pipeline.push(
+        {
+          $lookup: {
+            from: 'faculties',
+            localField: 'faculty_id',
+            foreignField: '_id',
+            as: 'faculty_id',
+          },
+        },
+        { $unwind: { path: '$faculty_id', preserveNullAndEmptyArrays: true } }
+      );
+
+      const departments = await this.model.department.aggregate(pipeline);
+
+      return buildData({
+        results: departments,
+        skip: page,
+        limit,
+        currentLength: departments.length,
+        total,
+      });
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
   public async findById(id: string): Promise<Department> {
     try {
       const department = await this.model.department
@@ -80,6 +133,39 @@ class DepartmentService extends MainService {
     try {
       return await this.model.department.aggregate([
         { $match: { faculty_id: new mongoose.Types.ObjectId(facultyId) } },
+        {
+          $addFields: {
+            sortOrder: {
+              $cond: { if: { $eq: ['$order', 0] }, then: 999999, else: '$order' },
+            },
+          },
+        },
+        { $sort: { sortOrder: 1, created_at: -1 } },
+        {
+          $lookup: {
+            from: 'faculties',
+            localField: 'faculty_id',
+            foreignField: '_id',
+            as: 'faculty_id',
+          },
+        },
+        { $unwind: { path: '$faculty_id', preserveNullAndEmptyArrays: true } },
+      ]);
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  public async findByFacultyIdActive(facultyId: string): Promise<Department[]> {
+    try {
+      return await this.model.department.aggregate([
+        {
+          $match: {
+            faculty_id: new mongoose.Types.ObjectId(facultyId),
+            active: true,
+          },
+        },
         {
           $addFields: {
             sortOrder: {
@@ -178,6 +264,27 @@ class DepartmentService extends MainService {
         { new: true }
       );
       if (!updatedDepartment) throw new HttpException(404, 'Department not found');
+      return updatedDepartment;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  public async toggleActive(id: string): Promise<Department> {
+    try {
+      const department = await this.model.department.findById(id);
+      if (!department) throw new HttpException(404, 'Department not found');
+
+      const updatedDepartment = await this.model.department.findByIdAndUpdate(
+        id,
+        {
+          active: !department.active,
+          updated_at: new Date(),
+        },
+        { new: true }
+      );
+
       return updatedDepartment;
     } catch (error) {
       console.error(error);

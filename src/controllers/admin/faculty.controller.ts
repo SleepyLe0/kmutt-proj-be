@@ -99,6 +99,21 @@ export default class FacultyController {
     });
   }
 
+  @Put('/:id/toggle-active')
+  public async toggleFacultyActive(
+    @Param('id') id: string,
+    @Res() res: Response
+  ) {
+    const faculty = await this.facultyService.toggleActive(id);
+    return res.json({
+      status: true,
+      message: faculty.active
+        ? 'Faculty activated successfully'
+        : 'Faculty deactivated successfully',
+      data: faculty,
+    });
+  }
+
   @Delete('/:id')
   public async deleteFaculty(@Param('id') id: string, @Res() res: Response) {
     const result = await this.facultyService.delete(id);

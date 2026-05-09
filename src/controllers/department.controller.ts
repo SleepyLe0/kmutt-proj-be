@@ -19,7 +19,8 @@ export default class DepartmentController {
     @Param('facultyId') facultyId: string,
     @Res() res: Response
   ) {
-    const departments = await this.departmentService.findByFacultyId(facultyId);
+    const departments =
+      await this.departmentService.findByFacultyIdActive(facultyId);
     return res.json({
       status: true,
       data: departments,

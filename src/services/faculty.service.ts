@@ -47,6 +47,47 @@ class FacultyService extends MainService {
     }
   }
 
+  public async findAllActive({
+    limit = 20,
+    page = 1,
+  }: paginationDto): Promise<{ info: any; data: Faculty[] }> {
+    try {
+      const skip = (page - 1) * limit;
+      const filter = { active: true };
+      const total = await this.model.faculty.countDocuments(filter);
+
+      const pipeline: any[] = [
+        { $match: filter },
+        {
+          $addFields: {
+            sortOrder: {
+              $cond: { if: { $eq: ['$order', 0] }, then: 999999, else: '$order' },
+            },
+          },
+        },
+        { $sort: { sortOrder: 1, created_at: -1 } },
+        { $skip: skip },
+      ];
+
+      if (limit > 0) {
+        pipeline.push({ $limit: limit });
+      }
+
+      const faculties = await this.model.faculty.aggregate(pipeline);
+
+      return buildData({
+        results: faculties,
+        skip: page,
+        limit,
+        currentLength: faculties.length,
+        total,
+      });
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
   public async findById(id: string): Promise<Faculty> {
     try {
       return await this.model.faculty.findById(id);
@@ -101,6 +142,27 @@ class FacultyService extends MainService {
         },
         { new: true }
       );
+      return updatedFaculty;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  public async toggleActive(id: string): Promise<Faculty> {
+    try {
+      const faculty = await this.model.faculty.findById(id);
+      if (!faculty) throw new HttpException(404, 'Faculty not found');
+
+      const updatedFaculty = await this.model.faculty.findByIdAndUpdate(
+        id,
+        {
+          active: !faculty.active,
+          updated_at: new Date(),
+        },
+        { new: true }
+      );
+
       return updatedFaculty;
     } catch (error) {
       console.error(error);
